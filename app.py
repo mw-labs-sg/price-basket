@@ -17,6 +17,7 @@ ITEMS = [
     ("Vegetables", "Onions", "Any brand", "700 g equivalent", 1, 2.04, "kg", .7, 1.30, 1.35, 2.60),
     ("Vegetables", "Potatoes", "Any brand", "1 kg equivalent", 1, 1.65, "kg", 1, 1.25, 1.50, 3.95),
     ("Breakfast", "Ham", "Any brand", "100 g equivalent", 1, 5.50, "kg", .1, 1.78, 1.66, 7.45),
+    ("Breakfast", "Sausages", "Johnsonville Smoked Cheese", "1 pack", 1, None, "item", 1, 9.90, None, None),
     ("Vegetables", "Kai Lan", "Any brand", "200 g equivalent", 1, 1.60, "kg", .2, 1.40, 1.20, 2.50),
     ("Vegetables", "Radish", "Fresh produce", "400 g equivalent", 1, 1.41, "kg", .4, .80, 1.45, 1.80),
     ("Vegetables", "Brown Shimeji Mushrooms", "Fresh produce", "150 g equivalent", 1, .90, "kg", .15, .90, 2.04, 3.00),
@@ -36,7 +37,7 @@ ITEMS = [
     ("Vegetables", "Carrots", "Any brand", "500 g", 1, 1.00, "kg", .5, .94, .95, 1.90),
     ("Breakfast", "Loaf Bread", "Any brand", "400 g", 1, 4.10, "kg", .4, 2.50, 2.50, 2.50),
     ("Breakfast", "Fresh Milk", "Any brand", "946 ml", 2, 3.63, "L", .946, 3.35, 3.35, 3.35),
-    ("Breakfast", "Salmon", "Smoked or sliced", "100 g equivalent", 1, 4.90, "kg", .1, 4.50, 3.95, 7.95),
+    ("Breakfast", "Smoked Salmon", "Thye Ann", "100 g", 1, 4.90, "kg", .1, 5.99, 3.95, 7.95),
     ("Beverages", "100PLUS", "Active", "12 x 300 ml", 1, 9.47, "L", 3.6, 8.95, 9.47, 9.95),
     ("Fruits", "Apples", "Any brand", "650 g equivalent", 1, 3.67, "kg", .65, 4.26, 2.80, 3.94),
     ("Fruits", "Oranges", "Any brand", "800 g equivalent", 1, 5.76, "kg", .8, 6.32, 3.95, 7.95),
@@ -95,7 +96,7 @@ category_counts = {}
 for row in display_items:
     category_counts[row[0]] = category_counts.get(row[0], 0) + 1
 CATEGORY_ORDER = {name: index for index, name in enumerate(CATEGORY_NAMES)}
-ITEM_ORDER = {name: index for index, name in enumerate(("Fresh Milk", "Eggs", "Loaf Bread", "Ham", "Butter", "Salmon", "Apples", "Oranges", "Bananas", "Blackberries", "Strawberries", "Broccoli", "Cabbage", "Baby Corn", "Corn", "Garlic", "Brown Shimeji Mushrooms", "Carrots", "Green Beans", "Green Chillies", "Radish", "Kai Lan", "Gourd", "Onions", "Potatoes", "Xiao Bai Cai", "Chicken", "Pork", "Beef", "Fish", "Prawns", "Rice", "Indomie", "100PLUS"))}
+ITEM_ORDER = {name: index for index, name in enumerate(("Fresh Milk", "Eggs", "Loaf Bread", "Ham", "Sausages", "Butter", "Smoked Salmon", "Apples", "Oranges", "Bananas", "Blackberries", "Strawberries", "Broccoli", "Cabbage", "Baby Corn", "Corn", "Garlic", "Brown Shimeji Mushrooms", "Carrots", "Green Beans", "Green Chillies", "Radish", "Kai Lan", "Gourd", "Onions", "Potatoes", "Xiao Bai Cai", "Chicken", "Pork", "Beef", "Fish", "Prawns", "Rice", "Indomie", "100PLUS"))}
 for category, item, brand, pack, _qty, paid, unit, amount, *store_prices in sorted(display_items, key=lambda row: (CATEGORY_ORDER.get(row[0], 99), ITEM_ORDER.get(row[1], 99), row[1])):
     prices = [paid, *store_prices]
     available = [p for p in prices if p is not None]
