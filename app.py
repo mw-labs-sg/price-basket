@@ -4,7 +4,7 @@ from datetime import date, datetime
 from urllib.parse import quote_plus
 import streamlit as st
 
-st.set_page_config(page_title="Price Basket", page_icon="🛒", layout="wide")
+st.set_page_config(page_title="Price Basket Kaki", page_icon="🧺", layout="wide")
 
 # category, item, brand, pack, qty, paid price, unit, kg/L quantity, SS, FP, CS
 ITEMS = [
@@ -78,8 +78,6 @@ LINK_TEMPLATES = {
     "rm": "https://www.lazada.sg/catalog/?q={q}",
 }
 
-BASKET_ANNUAL = sum(max(0, r[5] - r[8]) * 52 for r in ITEMS)
-
 # ---------------------------------------------------------- dining deals ----
 # Hand-checked against published sources on the date below. Dining promos
 # expire constantly -- re-check before relying on any single row. Anything
@@ -146,15 +144,25 @@ TRAVEL_LEVERS = (
     ("Right-size baggage", 1.5, "Price the whole trip, including bags and seats, before choosing the fare."),
 )
 TRAVEL_DEALS_CHECKED = "29 Aug 2026"
-# region, carrier, destination, price, fare type, note, booking deadline, url
-TRAVEL_FARES = (
-    ("Nearby", "Scoot", "Penang", "S$159", "Return economy", "24–28 Sep 2026 fare snapshot", None, "https://www.flyscoot.com/flights/en/flights-from-singapore"),
-    ("Nearby", "Singapore Airlines", "Kuala Lumpur", "S$158", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Nearby", "Singapore Airlines", "Bali", "S$298", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Asia", "Scoot", "Bangkok", "S$213", "Return economy", "20 Sep–21 Nov 2026 fare snapshot", None, "https://www.flyscoot.com/flights/en/flights-from-singapore"),
-    ("Asia", "Singapore Airlines", "Hong Kong", "S$358", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Long haul", "Singapore Airlines", "Sydney", "S$588", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Long haul", "Singapore Airlines", "Amsterdam", "S$998", "Return economy", "Selected outbound periods", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+SCHOOL_HOLIDAY_WINDOWS = {
+    "September break": ("4–13 Sep 2026", "Teachers' Day + MOE Term 3 break", "4 Sep 2026", "13 Sep 2026"),
+    "Year-end break": ("21 Nov–31 Dec 2026", "MOE Term 4 school holiday", "21 Nov 2026", "31 Dec 2026"),
+}
+# group, destination, indicative return fare, September dates, year-end dates,
+# trip length, why it works, source URL. Sale fares are indicative and may not
+# be available on the suggested family dates.
+TRIP_IDEAS = (
+    ("Australia & NZ", "Perth", "From S$548", "4–12 Sep", "21–29 Nov", "8 nights", "Easy first Australia trip; beaches, wildlife and a compact city.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Sydney", "From S$588", "4–13 Sep", "28 Nov–6 Dec", "9 nights", "Harbour sights plus Blue Mountains; spring weather suits family days out.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Melbourne", "From S$688", "4–13 Sep", "5–13 Dec", "9 nights", "City, wildlife and a Great Ocean Road add-on without changing hotels often.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Auckland + Rotorua", "From S$1,288", "4–13 Sep", "27 Nov–6 Dec", "9 nights", "A good North Island loop with geothermal parks and short driving days.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Osaka + Kyoto", "From S$808", "4–13 Sep", "21–29 Nov", "9 nights", "One base or a simple two-city split; late November often catches autumn colour.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Tokyo", "From S$1,008", "4–13 Sep", "28 Nov–6 Dec", "9 nights", "Big family variety; year-end dates are cooler and generally more comfortable.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Hokkaido", "Check live fare", "4–13 Sep", "12–20 Dec", "8 nights", "Choose September for outdoors or December for an early snow-focused trip.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Penang", "From S$159", "5–9 Sep", "21–25 Nov", "4 nights", "Short, food-led break with little planning overhead.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Bangkok", "From S$213", "5–9 Sep", "21–25 Nov", "4 nights", "Simple city break with family hotels, food and indoor options.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Bali", "From S$298", "4–10 Sep", "21–27 Nov", "6 nights", "Works best with one resort base; September is typically the stronger window.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Regional", "Hanoi", "From S$328", "4–10 Sep", "28 Nov–4 Dec", "6 nights", "Pair the city with Ninh Binh for a compact culture-and-nature trip.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
 )
 
 # Home-screen offers, verified against the linked publisher pages. Keep this
@@ -175,6 +183,10 @@ def sgd(value, dp=2):
     return f"S${value:,.{dp}f}"
 
 
+st.session_state.setdefault("appearance", "Dark")
+appearance = st.session_state["appearance"]
+
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -192,43 +204,39 @@ st.markdown("""
   --good:#72dfb0; --good-deep:#40b987; --good-dim:#286e56;
   --good-soft:rgba(114,223,176,.13); --good-softer:rgba(114,223,176,.07);
   --shadow:0 18px 50px rgba(0,0,0,.34);
+  --app-bg:radial-gradient(circle at 78% -10%,#182438 0,transparent 35%),var(--bg);
+  --band-a:#172335;--band-b:#101824;--band-border:#30415a;
+  --pick-top:#172232;--flash-a:#172231;--flash-b:#101720;--flash-hover:#405671;
+  --miles-a:#17283a;--miles-b:#111824;--miles-border:#31526a;--mark-text:#12151c;
   color-scheme:dark;
 }
-.stApp{background:radial-gradient(circle at 78% -10%,#182438 0,transparent 35%),var(--bg);color:var(--text)}
+.stApp{background:var(--app-bg);color:var(--text)}
 html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
 .block-container{max-width:1400px;padding:1.8rem 2.2rem 4rem}
 #MainMenu,footer,header{visibility:hidden}
 ::selection{background:var(--accent-dim);color:#fff}
 
 .hero{align-items:center;display:flex;gap:13px;margin-bottom:15px}
-.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;box-shadow:0 8px 24px rgba(241,132,85,.25);color:#12151c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
+.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;box-shadow:0 8px 24px rgba(241,132,85,.25);color:var(--mark-text);display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
 .hero h1{color:var(--text);font-size:30px;letter-spacing:-.9px;margin:0}
 .hero p{color:var(--muted);font-size:13px;margin:4px 0 0}
 
 /* category nav pills */
 div[data-testid="stPills"]{margin:5px 0 10px}
 div[data-testid="stPills"] button{border:1px solid var(--border)!important;border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:7px 17px!important}
+div[data-baseweb="select"]>div,div[data-baseweb="input"]>div{background:var(--surface)!important;border-color:var(--border)!important;color:var(--text)!important}
+div[data-baseweb="select"] *,div[data-baseweb="input"] input{color:var(--text)!important}
+div[data-baseweb="popover"] ul{background:var(--surface)!important;color:var(--text)!important}
+div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 
-.band{background:linear-gradient(135deg,#172335,#101824);border:1px solid #30415a;border-radius:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 16px;padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.band{background:linear-gradient(135deg,var(--band-a),var(--band-b));border:1px solid var(--band-border);border-radius:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 16px;padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
 .band::after{background:radial-gradient(circle at 88% 12%,rgba(240,168,105,.22),transparent 62%);content:'';inset:0;position:absolute}
 .band>*{position:relative;z-index:1}
 .band span{color:var(--accent);display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-.band strong{color:#fff;display:block;font-size:40px;letter-spacing:-1.6px;line-height:1.04;margin-top:5px}
+.band strong{color:var(--text);display:block;font-size:40px;letter-spacing:-1.6px;line-height:1.04;margin-top:5px}
 .band small{color:var(--muted);font-size:11.5px;line-height:1.55;text-align:right}
 .band small b{color:var(--text)}
 
-.cards{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));margin:0 0 14px}
-.card{background:linear-gradient(180deg,#141d2a,var(--surface));border:1px solid var(--border);border-radius:15px;padding:17px 18px;transition:border-color .15s,transform .15s;box-shadow:0 8px 24px rgba(0,0,0,.16)}
-.card:hover{border-color:var(--accent-dim);transform:translateY(-1px)}
-.card h3{color:var(--text);font-size:13.5px;font-weight:700;margin:0 0 10px}
-.card .big{color:var(--good);font-size:25px;font-weight:700;letter-spacing:-.8px}
-.card .sub{color:var(--dim);font-size:11px;margin-top:2px}
-.kv{border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11.5px;margin-top:9px;padding-top:8px}
-.kv i{color:var(--muted);font-style:normal}
-.kv b{color:var(--text);font-weight:600}
-.bar{background:var(--raised);border-radius:3px;height:5px;margin-top:11px;overflow:hidden}
-.bar div{background:linear-gradient(90deg,var(--good),var(--good-deep));height:100%}
-.hint{background:var(--good-soft);border:1px solid var(--good-dim);border-radius:7px;color:var(--good);display:inline-block;font-size:10.5px;margin-top:9px;padding:4px 8px}
 .why{color:var(--muted);font-size:12px;line-height:1.6;margin-top:9px}
 
 .sec{align-items:baseline;display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 11px}
@@ -301,7 +309,7 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 .srcs a:hover{text-decoration:underline}
 .checked{background:var(--raised);border:1px solid var(--border);border-radius:9px;color:var(--muted);display:inline-block;font-size:11px;margin:0 0 11px;padding:5px 10px}
 .picks{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin:12px 0 20px}
-.pick{background:linear-gradient(180deg,#172232,#111824);border:1px solid var(--border);border-radius:14px;padding:16px}
+.pick{background:linear-gradient(180deg,var(--pick-top),var(--surface));border:1px solid var(--border);border-radius:14px;padding:16px}
 .pick span{color:var(--accent);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .pick strong{color:var(--text);display:block;font-size:16px;margin:7px 0 5px}
 .pick p{color:var(--muted);font-size:11.5px;line-height:1.5;margin:0}
@@ -314,8 +322,8 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 .deal-head p{color:var(--muted);font-size:12px;line-height:1.5;margin:5px 0 0}
 .deal-head small{color:var(--dim);font-size:10.5px;white-space:nowrap}
 .flash-grid{display:grid;gap:13px;grid-template-columns:repeat(3,1fr);margin:10px 0 16px}
-.flash{background:linear-gradient(155deg,#172231,#101720);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;min-height:208px;padding:17px;position:relative;transition:border-color .15s,transform .15s}
-.flash:hover{border-color:#405671;transform:translateY(-2px)}
+.flash{background:linear-gradient(155deg,var(--flash-a),var(--flash-b));border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;min-height:208px;padding:17px;position:relative;transition:border-color .15s,transform .15s}
+.flash:hover{border-color:var(--flash-hover);transform:translateY(-2px)}
 .flash .top{align-items:center;display:flex;justify-content:space-between;gap:8px}
 .flash .cat{background:var(--soft);border-radius:999px;color:var(--accent);font-size:9.5px;font-weight:700;letter-spacing:.07em;padding:4px 8px;text-transform:uppercase}
 .flash .until{color:var(--dim);font-size:9.5px}
@@ -334,7 +342,7 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 .fare p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:5px 0 13px}
 .fare a{color:var(--accent);font-size:11px;font-weight:700;margin-top:auto;text-decoration:none}
 .fare a:hover{text-decoration:underline}
-.miles-strip{align-items:center;background:linear-gradient(135deg,#17283a,#111824);border:1px solid #31526a;border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
+.miles-strip{align-items:center;background:linear-gradient(135deg,var(--miles-a),var(--miles-b));border:1px solid var(--miles-border);border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
 .miles-strip span{color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .miles-strip strong{color:var(--text);display:block;font-size:17px;margin:4px 0}
 .miles-strip small{color:var(--muted);font-size:10.5px}
@@ -346,7 +354,7 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
   .mark{font-size:19px;height:39px;width:39px}
   .band{border-radius:12px;flex-direction:column;align-items:flex-start;gap:7px;padding:14px 16px}
   .band strong{font-size:32px}.band small{text-align:left}
-  .cards,.delivery,.tiles{grid-template-columns:repeat(2,1fr)}
+  .delivery,.tiles{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:1fr}
   .flash-grid{grid-template-columns:1fr}.flash{min-height:190px}
   .fare-grid{grid-template-columns:1fr}.miles-strip{align-items:flex-start;flex-direction:column}
@@ -362,9 +370,42 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
   .swipe-note{display:block}
 }
 </style>
-<div class="hero"><div class="mark">&#128722;</div><div><h1>Price Basket</h1>
-<p>Useful prices and short-lived deals across the things you actually spend on.</p></div></div>
 """, unsafe_allow_html=True)
+
+if appearance == "Light":
+    st.markdown("""
+    <style>
+    :root{
+      --bg:#f5f3ee;--surface:#ffffff;--raised:#eeeae2;--border:#d9d3c8;
+      --text:#1e2937;--muted:#5f6b78;--dim:#7b8490;
+      --accent:#d85f32;--accent-deep:#bd4720;--accent-dim:#e9a083;
+      --soft:rgba(216,95,50,.10);--softer:rgba(216,95,50,.05);
+      --good:#187a58;--good-deep:#116143;--good-dim:#98cbb9;
+      --good-soft:rgba(24,122,88,.10);--good-softer:rgba(24,122,88,.05);
+      --shadow:0 16px 42px rgba(52,43,32,.10);
+      --app-bg:radial-gradient(circle at 78% -10%,#fff1e6 0,transparent 34%),var(--bg);
+      --band-a:#fff9f3;--band-b:#f3eee7;--band-border:#ddd3c5;
+      --pick-top:#fffaf4;--flash-a:#fffdf9;--flash-b:#f7f3ed;--flash-hover:#c9b9a8;
+      --miles-a:#f3fbf7;--miles-b:#ffffff;--miles-border:#b7d8ca;--mark-text:#ffffff;
+      color-scheme:light;
+    }
+    .t thead th.savh{background:#e8f4ee}.pc.best .u{color:#357b62}
+    </style>
+    """, unsafe_allow_html=True)
+
+brand_col, theme_col = st.columns([5, 1.25], vertical_alignment="center")
+with brand_col:
+    st.markdown(
+        '<div class="hero"><div class="mark">&#129530;</div><div>'
+        '<h1>Price Basket Kaki</h1><p>Your Singapore kaki for better prices, makan deals and family trips.</p>'
+        '</div></div>',
+        unsafe_allow_html=True,
+    )
+with theme_col:
+    if hasattr(st, "segmented_control"):
+        st.segmented_control("Appearance", ("Light", "Dark"), key="appearance", label_visibility="collapsed")
+    else:
+        st.radio("Appearance", ("Light", "Dark"), key="appearance", horizontal=True, label_visibility="collapsed")
 
 # --------------------------------------------------- state + category nav ----
 # Canonical values live under v_* keys so they survive a category switch even
@@ -373,12 +414,18 @@ for index, (_, default_spend, default_pct, _note) in enumerate(SAVINGS_CATEGORIE
     st.session_state.setdefault(f"v_spend_{index}", default_spend)
     st.session_state.setdefault(f"v_pct_{index}", default_pct)
 
-VIEWS = ("Overview", *[c[0] for c in SAVINGS_CATEGORIES])
+VIEW_LABELS = {
+    "🔥 Deals": "Overview",
+    "🧺 Groceries": "Groceries",
+    "🍜 Dining out": "Dining out",
+    "✈️ Travel": "Travel",
+}
+VIEWS = tuple(VIEW_LABELS)
 if hasattr(st, "pills"):
-    view = st.pills("Category", VIEWS, default="Overview", label_visibility="collapsed")
+    view_label = st.pills("Category", VIEWS, default="🔥 Deals", label_visibility="collapsed")
 else:  # streamlit < 1.40 fallback
-    view = st.radio("Category", VIEWS, horizontal=True, label_visibility="collapsed")
-view = view or "Overview"
+    view_label = st.radio("Category", VIEWS, horizontal=True, label_visibility="collapsed")
+view = VIEW_LABELS.get(view_label or "🔥 Deals", "Overview")
 
 
 def category_rows():
@@ -393,25 +440,7 @@ def category_rows():
     return out
 
 
-def card_html(row, total, lead=False):
-    share = (row["saving"] / total * 100) if total else 0
-    hint = ""
-    if row["name"] == DATA_CATEGORY:
-        hint = f'<div class="hint">Verified basket comparison: {sgd(BASKET_ANNUAL, 0)}/yr</div>'
-    return (
-        f'<div class="card{" lead" if lead else ""}"><h3>{html.escape(row["name"])}</h3>'
-        f'<div class="big">{sgd(row["saving"], 0)}</div>'
-        f'<div class="sub">recoverable per year</div>'
-        f'<div class="kv"><i>Annual spend</i><b>{sgd(row["spend"], 0)}</b></div>'
-        f'<div class="kv"><i>Saving rate</i><b>{row["pct"]}%</b></div>'
-        f'<div class="kv"><i>Effective spend</i><b>{sgd(row["spend"] - row["saving"], 0)}</b></div>'
-        f'<div class="bar"><div style="width:{share:.0f}%"></div></div>'
-        f'<div class="sub">{share:.0f}% of total opportunity</div>{hint}</div>'
-    )
-
-
 rows = category_rows()
-total_spend = sum(r["spend"] for r in rows)
 total_saving = sum(r["saving"] for r in rows)
 
 # ------------------------------------------------------------- overview ----
@@ -459,27 +488,36 @@ else:
     active = next(r for r in rows if r["name"] == view)
     index = active["index"]
     share = (active["saving"] / total_saving * 100) if total_saving else 0
-    st.markdown(
-        f'<div class="band"><div><span>{html.escape(view)} &mdash; recoverable per year</span>'
-        f'<strong>{sgd(active["saving"], 0)}</strong></div>'
-        f'<small>{share:.0f}% of your total opportunity<br>'
-        f'{sgd(active["spend"] - active["saving"], 0)} effective spend after savings</small></div>',
-        unsafe_allow_html=True,
-    )
-    edit_spend, edit_pct = st.columns([1, 1.6])
-    with edit_spend:
-        st.session_state[f"v_spend_{index}"] = st.number_input(
-            "Annual spend (S$)", 0, 300000,
-            st.session_state[f"v_spend_{index}"], 500, key=f"w_spend_{index}",
+    if view == "Travel":
+        st.markdown(
+            '<div class="band"><div><span>Next family travel window</span>'
+            '<strong>4&ndash;13 Sep</strong></div>'
+            '<small>Teachers\' Day + MOE Term 3 break<br>'
+            '<b>Year-end:</b> 21 Nov&ndash;31 Dec 2026</small></div>',
+            unsafe_allow_html=True,
         )
-    with edit_pct:
-        st.session_state[f"v_pct_{index}"] = st.slider(
-            "Achievable saving %", 0, 50,
-            st.session_state[f"v_pct_{index}"], 1, key=f"w_pct_{index}",
-            help="What you can realistically capture on top of what you already do "
-                 "-- not the headline advertised discount.",
+    else:
+        st.markdown(
+            f'<div class="band"><div><span>{html.escape(view)} &mdash; recoverable per year</span>'
+            f'<strong>{sgd(active["saving"], 0)}</strong></div>'
+            f'<small>{share:.0f}% of your total opportunity<br>'
+            f'{sgd(active["spend"] - active["saving"], 0)} effective spend after savings</small></div>',
+            unsafe_allow_html=True,
         )
-    st.markdown(f'<div class="why">{html.escape(active["note"])}</div>', unsafe_allow_html=True)
+        edit_spend, edit_pct = st.columns([1, 1.6])
+        with edit_spend:
+            st.session_state[f"v_spend_{index}"] = st.number_input(
+                "Annual spend (S$)", 0, 300000,
+                st.session_state[f"v_spend_{index}"], 500, key=f"w_spend_{index}",
+            )
+        with edit_pct:
+            st.session_state[f"v_pct_{index}"] = st.slider(
+                "Achievable saving %", 0, 50,
+                st.session_state[f"v_pct_{index}"], 1, key=f"w_pct_{index}",
+                help="What you can realistically capture on top of what you already do "
+                     "-- not the headline advertised discount.",
+            )
+        st.markdown(f'<div class="why">{html.escape(active["note"])}</div>', unsafe_allow_html=True)
 
 # ------------------------------------------- grocery price detail (data) ----
 if view == DATA_CATEGORY:
@@ -738,35 +776,47 @@ elif view == DEALS_CATEGORY:
 # -------------------------------------------------------- travel planner ----
 elif view == "Travel":
     st.markdown(
-        '<div class="sec"><h2>Current fares from Singapore</h2>'
-        f'<p>Checked {TRAVEL_DEALS_CHECKED} · indicative prices, cheapest first</p></div>',
+        '<div class="sec"><h2>School-holiday trip finder</h2>'
+        '<p>Pick the holiday first, then a part of the world</p></div>',
         unsafe_allow_html=True,
     )
 
-    travel_region = st.segmented_control(
-        "Region", ("All", "Nearby", "Asia", "Long haul"), default="All",
-        label_visibility="collapsed", key="travel_region",
-    ) if hasattr(st, "segmented_control") else st.radio(
-        "Region", ("All", "Nearby", "Asia", "Long haul"), horizontal=True,
-        label_visibility="collapsed", key="travel_region",
+    holiday_col, destination_col = st.columns([1.15, 1])
+    with holiday_col:
+        holiday_period = st.selectbox("School holiday", tuple(SCHOOL_HOLIDAY_WINDOWS), key="travel_holiday")
+    with destination_col:
+        travel_group = st.selectbox(
+            "Where to", ("All destinations", "Australia & NZ", "Japan", "Regional"),
+            key="travel_group",
+        )
+    holiday_dates, holiday_note, _holiday_start, _holiday_end = SCHOOL_HOLIDAY_WINDOWS[holiday_period]
+    date_index = 3 if holiday_period == "September break" else 4
+    st.markdown(
+        f'<div class="miles-strip"><div><span>Official MOE window</span>'
+        f'<strong>{html.escape(holiday_dates)}</strong>'
+        f'<small>{html.escape(holiday_note)} · Suggested trips below leave a buffer before school restarts.</small></div>'
+        '<a href="https://www.moe.gov.sg/calendar" target="_blank" rel="noopener">MOE calendar &rarr;</a></div>',
+        unsafe_allow_html=True,
     )
-    travel_region = travel_region or "All"
-    matching_fares = [f for f in TRAVEL_FARES if travel_region == "All" or f[0] == travel_region]
-    matching_fares.sort(key=lambda f: float(re.sub(r"[^0-9.]", "", f[3])))
+
+    matching_fares = [
+        idea for idea in TRIP_IDEAS
+        if travel_group == "All destinations" or idea[0] == travel_group
+    ]
     fares_html = '<div class="fare-grid">'
-    for region, carrier, destination, price, fare_type, note, deadline, url in matching_fares:
-        deadline_text = f"Book by {deadline}" if deadline else "Fare snapshot"
+    for group, destination, price, sep_dates, year_end_dates, nights, why, url in matching_fares:
+        suggested_dates = sep_dates if date_index == 3 else year_end_dates
         fares_html += (
             '<article class="fare"><div class="route">'
-            f'<span>{html.escape(carrier)}</span><span>{html.escape(deadline_text)}</span></div>'
-            f'<h3>Singapore &rarr; {html.escape(destination)}</h3>'
-            f'<div class="price">From {html.escape(price)}</div>'
-            f'<p>{html.escape(fare_type)} · {html.escape(note)}</p>'
-            f'<a href="{url}" target="_blank" rel="noopener">Check live fare &rarr;</a></article>'
+            f'<span>{html.escape(group)}</span><span>{html.escape(nights)}</span></div>'
+            f'<h3>{html.escape(destination)}</h3>'
+            f'<div class="price">{html.escape(price)}</div>'
+            f'<p><b>{html.escape(suggested_dates)}</b><br>{html.escape(why)}</p>'
+            f'<a href="{url}" target="_blank" rel="noopener">Check flights &rarr;</a></article>'
         )
     st.markdown(fares_html + '</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="miles-strip"><div><span>Best use of miles right now</span>'
+        '<div class="miles-strip"><div><span>Best use of miles this month</span>'
         '<strong>30% off KrisFlyer Saver awards</strong>'
         '<small>Examples from Singapore: Kuala Lumpur or Penang from 5,600 miles; '
         'Bangkok or Phuket from 9,100 miles one-way. Book by 31 Aug for September travel.</small></div>'
@@ -775,9 +825,9 @@ elif view == "Travel":
         unsafe_allow_html=True,
     )
     st.markdown(
-        '<div class="note"><b>Before booking:</b> Singapore Airlines sale fares include taxes and surcharges; '
-        'Scoot snapshots may add optional bags, seats and meals. Availability is checked again when you click through, '
-        'so compare the final checkout total rather than the headline fare.</div>',
+        f'<div class="note"><b>Fare check:</b> Prices were checked {TRAVEL_DEALS_CHECKED}. '
+        'The dates are family-friendly suggestions inside the MOE holiday, not a guarantee that the headline fare '
+        'is available on those exact days. Compare the final total including bags, seats and meals.</div>',
         unsafe_allow_html=True,
     )
 
