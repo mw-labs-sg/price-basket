@@ -1,4 +1,6 @@
 import html
+import re
+from datetime import date, datetime
 from urllib.parse import quote_plus
 import streamlit as st
 
@@ -110,7 +112,27 @@ DINING_CARDS = (
     ("OCBC 365", "5%", "S$800-1,600", "S$80-160", 1920),
     ("POSB Everyday", "5%", "S$800", "S$20", 240),
 )
+# Specific restaurants, cross-checked across two independent guides on the
+# date above. name, venue, cuisine/what, was ++, now ++, cards, ends
+# "ends" of None means no published end date. Prices are ++ (add ~19.9% for
+# service charge and GST).
+DINING_RESTAURANTS = (
+    ("Plate", "Carlton City Hotel, Tanjong Pagar", "Rotating themed buffets", "S$56-62++", "S$28-31++", "Citi, DBS/POSB, Maybank, OCBC, StanChart", "18 Dec 2026"),
+    ("Sun's Cafe", "Hotel Grand Pacific, Bras Basah", "Peranakan and Nyonya", "S$60++", "S$30-32.50++", "DBS/POSB, UOB, HSBC, OCBC, Maybank, Citi", None),
+    ("Royale", "Mercure Singapore Bugis", "International buffet", "From S$65++", "From S$32.50++", "DBS/POSB, Maybank, OCBC, Citi, UOB", None),
+    ("The Line", "Shangri-La Singapore", "International buffet", "From S$68++", "From S$34++", "HSBC Premier", None),
+    ("Racines", "Sofitel Singapore City Centre", "French-Chinese buffet", "S$68-128++", "S$34-64++", "SAFRA members", None),
+    ("Crossroads Buffet", "Marriott Tang Plaza", "Weekday lunch buffet", "S$70++", "S$35++", "DBS/POSB", "30 Nov 2026"),
+    ("CLOVE", "Swissotel The Stamford", "International buffet", "S$80-130++", "S$40-65++", "OCBC, DBS/POSB, Citi, HSBC, UOB", "31 Oct 2026"),
+    ("Cafe Mosaic", "Carlton Hotel, Bras Basah", "Hong Kong dim sum and tze char", "S$62-128++", "S$31++ lunch / S$64++ dinner", "DBS/POSB, Citi, OCBC, UOB", None),
+    ("Makan@Jen", "JEN Singapore Orchardgateway", "Weekday buffet", "S$88++", "S$44++", "Not specified", None),
+    ("The Landmark", "Village Hotel Bugis", "MUIS halal international", "S$85.90-102.90++", "S$42.95-51.45++", "UOB", None),
+    ("Atrium Restaurant", "Holiday Inn Atrium, Outram", "Nyonya halal spread", "S$99-129++", "S$49.50-64.50++", "None; odd groups need DBS/POSB, Citi, UOB", "9 Sep 2026"),
+    ("Seasonal Tastes", "The Westin, Marina Bay", "International buffet", "S$98-108++", "S$49-54++", "DBS/POSB, OCBC, UOB, Citi, Maybank, BOC, JCB", "31 Aug 2026"),
+)
 DEALS_SOURCES = (
+    ("1-for-1 buffets, Aug 2026", "https://www.misslobang.com/article/best-1-for-1-buffet-deals-singapore-august-2026"),
+    ("Eatbook buffet deals", "https://eatbook.sg/1-for-1-buffet-2026/"),
     ("Dining apps compared", "https://divedeals.sg/blog/best-dining-deals-app-singapore"),
     ("Cashback cards for dining", "https://sethisfy.com/great-cards-for-good-food/"),
     ("MoneySmart dining cards", "https://www.moneysmart.sg/credit-cards/dining"),
@@ -125,112 +147,139 @@ def sgd(value, dp=2):
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
-:root{color-scheme:light}
-.stApp{background:#f6f8fb;color:#17202a}
-html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
-.block-container{max-width:1500px;padding:1.6rem 2rem 3rem}
-#MainMenu,footer,header{visibility:hidden}
 
-.hero{align-items:center;display:flex;gap:12px;margin-bottom:14px}
-.mark{align-items:center;background:linear-gradient(135deg,#27835d,#185f43);border-radius:12px;color:#fff;display:flex;font-size:22px;height:44px;justify-content:center;width:44px}
-.hero h1{font-size:29px;letter-spacing:-.8px;margin:0}
-.hero p{color:#718078;font-size:13px;margin:3px 0 0}
+/* Dark palette. Every colour is a token so the theme can be retuned in one
+   place; .streamlit/config.toml carries the matching widget chrome. */
+:root{
+  --bg:#0e1412; --surface:#161e1a; --raised:#1c2621; --border:#26332d;
+  --text:#e7ede9; --muted:#9db0a7; --dim:#8b9c94;
+  --accent:#3fbe83; --accent-deep:#2a9c68; --accent-dim:#1f6f4b;
+  --soft:rgba(63,190,131,.13); --softer:rgba(63,190,131,.07);
+  --shadow:0 8px 26px rgba(0,0,0,.36);
+  color-scheme:dark;
+}
+.stApp{background:var(--bg);color:var(--text)}
+html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
+.block-container{max-width:1500px;padding:1.6rem 2rem 3.5rem}
+#MainMenu,footer,header{visibility:hidden}
+::selection{background:var(--accent-dim);color:#fff}
+
+.hero{align-items:center;display:flex;gap:13px;margin-bottom:15px}
+.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:13px;box-shadow:0 4px 14px rgba(63,190,131,.22);color:#06120c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
+.hero h1{color:var(--text);font-size:30px;letter-spacing:-.9px;margin:0}
+.hero p{color:var(--muted);font-size:13px;margin:4px 0 0}
 
 /* category nav pills */
-div[data-testid="stPills"]{margin:0 0 4px}
+div[data-testid="stPills"]{margin:2px 0 6px}
 div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:6px 16px!important}
 
-.band{background:linear-gradient(135deg,#176b49,#27835d);border-radius:14px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:6px 0 12px;padding:16px 20px}
-.band span{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;opacity:.85;text-transform:uppercase}
-.band strong{display:block;font-size:38px;letter-spacing:-1.5px;line-height:1.05;margin-top:4px}
-.band small{font-size:11.5px;opacity:.85;text-align:right;line-height:1.5}
+.band{background:linear-gradient(135deg,#17362a,#122019);border:1px solid var(--border);border-radius:15px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 14px;padding:18px 21px;position:relative;overflow:hidden}
+.band::after{background:radial-gradient(circle at 88% 12%,rgba(63,190,131,.20),transparent 62%);content:'';inset:0;position:absolute}
+.band>*{position:relative;z-index:1}
+.band span{color:var(--accent);display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.band strong{color:#fff;display:block;font-size:40px;letter-spacing:-1.6px;line-height:1.04;margin-top:5px}
+.band small{color:var(--muted);font-size:11.5px;line-height:1.55;text-align:right}
+.band small b{color:var(--text)}
 
-.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));margin:0 0 12px}
-.card{background:#fff;border:1px solid #e4eae6;border-radius:12px;padding:13px 15px}
-.card.lead{border-color:#bcdccb;box-shadow:0 4px 14px rgba(22,50,37,.06)}
-.card h3{color:#203128;font-size:13.5px;font-weight:700;margin:0 0 9px}
-.card .big{color:#176b49;font-size:24px;font-weight:700;letter-spacing:-.7px}
-.card .sub{color:#8a948e;font-size:11px;margin-top:1px}
-.kv{border-top:1px solid #eef2f0;display:flex;justify-content:space-between;font-size:11.5px;margin-top:9px;padding-top:7px}
-.kv i{color:#75817b;font-style:normal}
-.kv b{color:#203128;font-weight:600}
-.bar{background:#eef3f0;border-radius:3px;height:5px;margin-top:10px;overflow:hidden}
-.bar div{background:linear-gradient(90deg,#27835d,#176b49);height:100%}
-.hint{background:#eaf6ef;border-radius:6px;color:#246244;display:inline-block;font-size:10.5px;margin-top:8px;padding:3px 7px}
-.why{color:#8a948e;font-size:11.5px;line-height:1.5;margin-top:8px}
+.cards{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));margin:0 0 14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 16px;transition:border-color .15s,transform .15s}
+.card:hover{border-color:var(--accent-dim);transform:translateY(-1px)}
+.card h3{color:var(--text);font-size:13.5px;font-weight:700;margin:0 0 10px}
+.card .big{color:var(--accent);font-size:25px;font-weight:700;letter-spacing:-.8px}
+.card .sub{color:var(--dim);font-size:11px;margin-top:2px}
+.kv{border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11.5px;margin-top:9px;padding-top:8px}
+.kv i{color:var(--muted);font-style:normal}
+.kv b{color:var(--text);font-weight:600}
+.bar{background:var(--raised);border-radius:3px;height:5px;margin-top:11px;overflow:hidden}
+.bar div{background:linear-gradient(90deg,var(--accent),var(--accent-deep));height:100%}
+.hint{background:var(--soft);border:1px solid var(--accent-dim);border-radius:7px;color:var(--accent);display:inline-block;font-size:10.5px;margin-top:9px;padding:4px 8px}
+.why{color:var(--muted);font-size:12px;line-height:1.6;margin-top:9px}
 
-.sec{align-items:baseline;display:flex;gap:10px;margin:24px 0 10px}
-.sec h2{font-size:19px;letter-spacing:-.4px;margin:0}
-.sec p{color:#8a948e;font-size:12px;margin:0}
+.sec{align-items:baseline;display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 11px}
+.sec h2{color:var(--text);font-size:19px;letter-spacing:-.4px;margin:0}
+.sec p{color:var(--dim);font-size:12px;margin:0}
 
-.tiles{display:grid;gap:10px;grid-template-columns:repeat(4,1fr);margin:12px 0}
-.tile{background:#fff;border:1px solid #e4eae6;border-radius:11px;padding:10px 13px}
-.tile span{color:#75817b;display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.tile strong{display:block;font-size:19px;letter-spacing:-.5px;margin-top:2px}
-.tile small{color:#8a948e;display:block;font-size:10.5px;margin-top:1px}
-.tile.win{background:#eaf6ef;border-color:#bcdccb}
-.tile.win strong,.tile.win small{color:#176b49}
+.tiles{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 14px}
+.tile span{color:var(--muted);display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.tile strong{color:var(--text);display:block;font-size:20px;letter-spacing:-.5px;margin-top:3px}
+.tile small{color:var(--dim);display:block;font-size:10.5px;margin-top:2px}
+.tile.win{background:var(--soft);border-color:var(--accent-dim)}
+.tile.win strong,.tile.win small{color:var(--accent)}
 
-.delivery{display:grid;gap:10px;grid-template-columns:repeat(4,1fr);margin:0 0 12px}
-.dcard{background:#fff;border:1px dashed #dfe7e2;border-radius:10px;font-size:12px;padding:9px 12px}
-.dcard b{color:#526059;display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;margin-bottom:3px;text-transform:uppercase}
-.dcard em{color:#8a948e;display:block;font-size:11px;font-style:normal;margin-top:2px}
+.delivery{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:0 0 13px}
+.dcard{background:var(--surface);border:1px dashed var(--border);border-radius:11px;color:var(--text);font-size:12px;padding:10px 13px}
+.dcard b{color:var(--muted);display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;margin-bottom:4px;text-transform:uppercase}
+.dcard em{color:var(--dim);display:block;font-size:11px;font-style:normal;margin-top:3px}
 
-.shell{background:#fff;border:1px solid #e4eae6;border-radius:12px;box-shadow:0 6px 20px rgba(22,50,37,.05);overflow:auto}
-.t{border-collapse:separate;border-spacing:0;font-size:13px;min-width:760px;width:100%}
-.t thead th{background:#f5f8f6;border-bottom:1px solid #dfe7e2;color:#526059;font-size:11px;font-weight:700;letter-spacing:.06em;padding:10px;position:sticky;text-align:right;text-transform:uppercase;top:0;z-index:3}
+.shell{background:var(--surface);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);overflow:auto}
+.t{border-collapse:separate;border-spacing:0;color:var(--text);font-size:13px;min-width:760px;width:100%}
+.t thead th{background:var(--raised);border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.07em;padding:11px 10px;position:sticky;text-align:right;text-transform:uppercase;top:0;z-index:3}
 .t thead th.itemh{left:0;text-align:left;z-index:4}
-.t thead th.savh{background:#eaf3ed;color:#246244}
-.t thead th em{color:#9aa49e;display:block;font-size:9.5px;font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none}
-.t td{border-bottom:1px solid #edf1ee;padding:8px 10px;vertical-align:middle}
+.t thead th.savh{background:#1d322a;color:var(--accent)}
+.t thead th em{color:var(--dim);display:block;font-size:9.5px;font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none}
+.t td{border-bottom:1px solid var(--border);padding:9px 10px;vertical-align:middle}
 .t tbody tr:last-child td{border-bottom:0}
-.catrow td{background:#f3f7f4;color:#27835d;font-size:10.5px;font-weight:700;letter-spacing:.09em;padding:6px 10px;text-transform:uppercase}
-.t td.item{background:#fff;font-weight:600;left:0;min-width:180px;position:sticky;z-index:2}
-.t td.item em{color:#9aa49e;display:block;font-size:10.5px;font-style:normal;font-weight:400;margin-top:1px}
-.t tbody tr:hover td,.t tbody tr:hover td.item{background:#fbfdfc}
+.catrow td{background:var(--raised);color:var(--accent);font-size:10.5px;font-weight:700;letter-spacing:.1em;padding:7px 10px;text-transform:uppercase}
+.t td.item{background:var(--surface);font-weight:600;left:0;min-width:180px;position:sticky;z-index:2}
+.t td.item em{color:var(--dim);display:block;font-size:10.5px;font-style:normal;font-weight:400;margin-top:2px}
+.t tbody tr:hover td,.t tbody tr:hover td.item{background:var(--raised)}
 .pc{text-align:right;white-space:nowrap}
 .pc a{color:inherit;display:block;padding:1px 0;text-decoration:none}
 .pc a:hover .p{text-decoration:underline}
 .pc .p{font-size:13.5px;font-weight:600}
-.pc .u{color:#9aa49e;font-size:10.5px;margin-top:1px}
-.pc.best{background:#eaf6ef}
-.pc.best .p{color:#126b48;font-weight:700}
-.pc.best .u{color:#5f9179}
-.pc.miss{color:#c2c9c5;text-align:right}
-.sv{background:#f7fbf9;color:#176b49;font-weight:700;text-align:right;white-space:nowrap}
-.sv.zero{color:#c2c9c5;font-weight:400}
-.note{color:#75817b;font-size:12px;line-height:1.6;margin:10px 2px}
+.pc .u{color:var(--dim);font-size:10.5px;margin-top:2px}
+.pc.best{background:var(--soft);box-shadow:inset 2px 0 0 var(--accent)}
+.pc.best .p{color:var(--accent);font-weight:700}
+.pc.best .u{color:#6cc79a}
+.pc.miss{color:var(--dim);text-align:right}
+.sv{background:var(--softer);color:var(--accent);font-weight:700;text-align:right;white-space:nowrap}
+.sv.zero{color:var(--dim);font-weight:400}
+.note{background:var(--surface);border:1px solid var(--border);border-radius:11px;color:var(--muted);font-size:12px;line-height:1.65;margin:12px 0;padding:13px 15px}
+.note b{color:var(--text)}
+.swipe-note{color:var(--dim);display:none;font-size:11px;margin:7px 2px;text-align:right}
+.empty{background:var(--surface);border:1px dashed var(--border);border-radius:13px;color:var(--muted);font-size:13px;line-height:1.65;padding:24px}
+.empty b{color:var(--text);display:block;font-size:14.5px;margin-bottom:6px}
+
+/* deals + restaurant tables */
 .t.deals{min-width:820px}
 .t.deals thead th{text-align:left}
 .t.deals td{text-align:left;white-space:normal}
-.t.deals td.nm{background:#fff;font-weight:600;left:0;min-width:165px;position:sticky;z-index:2}
+.t.deals td.nm{background:var(--surface);font-weight:600;left:0;min-width:165px;position:sticky;z-index:2}
+.t.deals tbody tr:hover td.nm{background:var(--raised)}
+.t.deals td.nm em{color:var(--dim);display:block;font-size:10.5px;font-style:normal;font-weight:400;margin-top:2px}
 .t.deals td.cost{font-weight:700;white-space:nowrap}
-.t.deals td.cost.free{color:#176b49}
+.t.deals td.cost.free{color:var(--accent)}
 .t.deals td.go{white-space:nowrap}
-.t.deals td.go a{background:#eaf6ef;border-radius:6px;color:#176b49;font-weight:700;padding:5px 10px;text-decoration:none}
-.t.deals td.go a:hover{background:#d8ecdf}
+.t.deals td.go a{background:var(--soft);border:1px solid var(--accent-dim);border-radius:7px;color:var(--accent);font-weight:700;padding:6px 11px;text-decoration:none}
+.t.deals td.go a:hover{background:var(--accent-dim);color:#fff}
 .t.deals td.num{text-align:right;white-space:nowrap}
-.srcs{color:#8a948e;font-size:11.5px;margin:10px 2px}
-.srcs a{color:#27835d;text-decoration:none}
+.t.deals td.was{color:var(--dim);text-decoration:line-through;white-space:nowrap}
+.t.deals td.now{color:var(--accent);font-weight:700;white-space:nowrap}
+.ends{border-radius:6px;font-size:10.5px;font-weight:600;padding:3px 7px;white-space:nowrap}
+.ends.soon{background:rgba(224,138,60,.16);color:#e2a163}
+.ends.ok{background:var(--raised);color:var(--muted)}
+.ends.open{background:var(--softer);color:var(--accent)}
+.srcs{color:var(--dim);font-size:11.5px;margin:11px 2px}
+.srcs a{color:var(--accent);text-decoration:none}
 .srcs a:hover{text-decoration:underline}
-.checked{background:#eef3f0;border-radius:9px;color:#56645d;display:inline-block;font-size:11px;margin:0 0 10px;padding:4px 9px}
-.swipe-note{color:#8a948e;display:none;font-size:11px;margin:6px 2px;text-align:right}
-.empty{background:#fff;border:1px dashed #dfe7e2;border-radius:12px;color:#8a948e;font-size:13px;line-height:1.6;padding:22px}
-.empty b{color:#203128;display:block;font-size:14px;margin-bottom:5px}
+.checked{background:var(--raised);border:1px solid var(--border);border-radius:9px;color:var(--muted);display:inline-block;font-size:11px;margin:0 0 11px;padding:5px 10px}
 
 @media(max-width:760px){
-  .block-container{padding:.7rem .5rem 1.6rem}
-  .hero{margin:0 .2rem 10px}.hero h1{font-size:23px}.hero p{font-size:11.5px}
-  .mark{font-size:19px;height:38px;width:38px}
-  .band{border-radius:11px;flex-direction:column;align-items:flex-start;gap:6px;padding:13px 15px}
-  .band strong{font-size:31px}.band small{text-align:left}
-  .cards{grid-template-columns:repeat(2,1fr)}
-  .delivery,.tiles{grid-template-columns:repeat(2,1fr)}
-  .sec{margin:18px 0 8px}.sec h2{font-size:17px}
+  .block-container{padding:.7rem .5rem 2rem}
+  .hero{margin:0 .2rem 11px;gap:10px}.hero h1{font-size:23px}.hero p{font-size:11.5px}
+  .mark{font-size:19px;height:39px;width:39px}
+  .band{border-radius:12px;flex-direction:column;align-items:flex-start;gap:7px;padding:14px 16px}
+  .band strong{font-size:32px}.band small{text-align:left}
+  .cards,.delivery,.tiles{grid-template-columns:repeat(2,1fr)}
+  .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
-  .t td{padding:7px 8px}.t thead th{padding:8px}
-  .t td.item{min-width:126px}
+  .t.deals{min-width:720px}
+  .t td{padding:8px}.t thead th{padding:9px 8px}
+  .t td.item,.t.deals td.nm{min-width:126px}
+  .t.deals td.go a{display:inline-block;padding:10px 13px}
   .pc .p{font-size:12.5px}
+  .note{padding:12px 13px}
   .swipe-note{display:block}
 }
 </style>
@@ -454,7 +503,7 @@ if view == DATA_CATEGORY:
 elif view == DEALS_CATEGORY:
     st.markdown(
         '<div class="sec"><h2>Current dining deals</h2>'
-        "<p>Subscription programmes and cashback cards available now</p></div>",
+        "<p>Specific venues, then the programmes and cards that unlock them</p></div>",
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -463,6 +512,65 @@ elif view == DEALS_CATEGORY:
         unsafe_allow_html=True,
     )
 
+    # Where to actually eat. End dates are evaluated against today, so rows
+    # age out on their own instead of quietly going stale.
+    def end_state(ends):
+        if ends is None:
+            return "open", "No end date"
+        left = (datetime.strptime(ends, "%d %b %Y").date() - date.today()).days
+        if left < 0:
+            return "expired", f"Ended {ends}"
+        if left <= 14:
+            return "soon", f"Ends {ends}" + (" (today)" if left == 0 else f" ({left}d)")
+        return "ok", f"Ends {ends}"
+
+    def entry_price(text):
+        """Lowest dollar figure in a price string, for numeric sorting."""
+        found = re.findall(r"\d+(?:\.\d+)?", text)
+        return min(float(n) for n in found) if found else float("inf")
+
+    live = [(r, *end_state(r[6])) for r in DINING_RESTAURANTS]
+    expired = [r for r, state, _ in live if state == "expired"]
+    live = [(r, state, lbl) for r, state, lbl in live if state != "expired"]
+    live.sort(key=lambda x: (entry_price(x[0][4]), x[0][0]))
+
+    st.markdown(
+        '<div class="sec"><h2>Where to eat</h2>'
+        f"<p>{len(live)} venues with a live 1-for-1, cheapest first</p></div>",
+        unsafe_allow_html=True,
+    )
+    rest = ('<div class="shell"><table class="t deals"><thead><tr>'
+            "<th>Restaurant</th><th>What</th><th>Usual</th><th>With 1-for-1</th>"
+            "<th>Cards accepted</th><th>Validity</th><th></th></tr></thead><tbody>")
+    for row, state, label in live:
+        name, venue, what, was, now, cards, _ends = row
+        url = "https://www.google.com/search?q=" + quote_plus(f"{name} {venue} 1-for-1 buffet")
+        rest += (
+            f'<tr><td class="nm">{html.escape(name)}<em>{html.escape(venue)}</em></td>'
+            f"<td>{html.escape(what)}</td>"
+            f'<td class="was">{html.escape(was)}</td>'
+            f'<td class="now">{html.escape(now)}</td>'
+            f"<td>{html.escape(cards)}</td>"
+            f'<td><span class="ends {state}">{html.escape(label)}</span></td>'
+            f'<td class="go"><a href="{url}" target="_blank" rel="noopener">Book &rarr;</a></td></tr>'
+        )
+    st.markdown(rest + "</tbody></table></div>", unsafe_allow_html=True)
+    st.markdown(
+        '<div class="note">Prices are <b>++</b> &mdash; add about 19.9% for '
+        "service charge and GST. Nearly every deal needs the qualifying card "
+        "presented at payment and the promotion named when booking, so confirm "
+        "both before you go. "
+        + (f"{len(expired)} row(s) hidden as already expired. " if expired else "")
+        + "These are hand-entered, not scraped, so treat the validity column as "
+        "a prompt to re-check rather than a guarantee.</div>",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="sec"><h2>Programmes and apps</h2>'
+        "<p>Subscriptions and free platforms that unlock the deals above</p></div>",
+        unsafe_allow_html=True,
+    )
     prog = ('<div class="shell"><table class="t deals"><thead><tr>'
             "<th>Programme</th><th>Cost</th><th>What you get</th>"
             "<th>Coverage</th><th>Best for</th><th></th></tr></thead><tbody>")
