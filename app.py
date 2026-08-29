@@ -119,10 +119,27 @@ UOB_VI_PERKS = (
     ("Fee", "S$654 yearly · non-waivable", "First supplementary card is free for life; later supplementary cards are chargeable."),
 )
 UOB_VI_DINING = (
-    ("Sheraton Towers Singapore", "30% off à la carte food", "Hotel and blackout-date terms apply."),
-    ("Capasso", "15% off à la carte food", "Plus priority reservations and one complimentary aperitif per diner; valid through 31 Dec 2026."),
-    ("NOX – Dine in the Dark", "Complimentary cocktail or Prosecco", "Reservation required; quote the UOB Visa Infinite Metal offer. Valid through 30 Dec 2026."),
-    ("Sapoto / Sushi Yujo", "Complimentary 300ml house-pour carafe", "Current published Visa Infinite Metal privilege; merchant terms apply."),
+    ("Mosella", "Pan Pacific Orchard", "20% off à la carte menu", "30 Dec 2026"),
+    ("Portman's Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
+    ("Peppermint", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
+    ("Skyline Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
+    ("Ginger", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026"),
+    ("Club 5", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026"),
+    ("Lime", "PARKROYAL COLLECTION Pickering", "20% off à la carte menu", "30 Dec 2026"),
+    ("Pete's Place", "Grand Hyatt Singapore", "15% off food bill", "30 Dec 2026"),
+    ("10|Scotts", "Grand Hyatt Singapore", "15% off afternoon tea or food/bites menu", "30 Dec 2026"),
+    ("Hai Tien Lo", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
+    ("Edge", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
+    ("Keyaki", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
+    ("Peach Blossoms", "PARKROYAL COLLECTION Marina Bay", "15% off à la carte menu", "30 Dec 2026"),
+    ("Li Bai Cantonese Restaurant", "Sheraton Towers Singapore", "15% off total bill", "30 Dec 2026"),
+    ("The Dining Room", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026"),
+    ("Lobby Bar", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026"),
+    ("Nobu Singapore", "Four Seasons Hotel Singapore", "Complimentary welcome drink per person", "See UOB terms"),
+    ("Capasso", "Telok Ayer", "15% off à la carte food + aperitif", "31 Dec 2026"),
+    ("NOX – Dine in the Dark", "Club Street", "Cocktail per diner or Prosecco with 4 prix fixe menus", "30 Dec 2026"),
+    ("Sapoto", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027"),
+    ("Sushi Yujo", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027"),
 )
 # Specific restaurants, cross-checked across two independent guides on the
 # date above. name, venue, cuisine/what, was ++, now ++, cards, ends
@@ -378,17 +395,7 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 .deal-head h2{color:var(--text);font-size:25px;letter-spacing:-.7px;margin:0}
 .deal-head p{color:var(--muted);font-size:12px;line-height:1.5;margin:5px 0 0}
 .deal-head small{color:var(--dim);font-size:10.5px;white-space:nowrap}
-.flash-grid{display:grid;gap:13px;grid-template-columns:repeat(3,1fr);margin:10px 0 16px}
-.flash{background:linear-gradient(155deg,var(--flash-a),var(--flash-b));border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;min-height:208px;padding:17px;position:relative;transition:border-color .15s,transform .15s}
-.flash:hover{border-color:var(--flash-hover);transform:translateY(-2px)}
-.flash .top{align-items:center;display:flex;justify-content:space-between;gap:8px}
-.flash .cat{background:var(--soft);border-radius:999px;color:var(--accent);font-size:9.5px;font-weight:700;letter-spacing:.07em;padding:4px 8px;text-transform:uppercase}
-.flash .until{color:var(--dim);font-size:9.5px}
-.flash h3{color:var(--text);font-size:16px;letter-spacing:-.25px;margin:17px 0 5px}
-.flash .offer{color:var(--good);font-size:21px;font-weight:700;letter-spacing:-.55px}
-.flash p{color:var(--muted);font-size:11.5px;line-height:1.5;margin:7px 0 16px}
-.flash a{align-items:center;border-top:1px solid var(--border);color:var(--accent);display:flex;font-size:11px;font-weight:700;justify-content:space-between;margin-top:auto;padding-top:11px;text-decoration:none}
-.flash a:hover{color:#ffc39d}
+.tag{background:var(--soft);border-radius:999px;color:var(--accent);display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;padding:4px 7px;text-transform:uppercase;white-space:nowrap}
 .home-note{color:var(--dim);font-size:10.5px;line-height:1.6;margin:5px 1px}
 .fare-grid{display:grid;gap:11px;grid-template-columns:repeat(3,1fr);margin:10px 0 15px}
 .fare{background:var(--surface);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;padding:15px}
@@ -405,11 +412,6 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 .hotel-pick small{color:var(--muted);display:block;font-size:9.5px;line-height:1.45}
 .fare .actions{display:flex;gap:12px;margin-top:auto}
 .fare .actions a{margin-top:0}
-.perk-grid{display:grid;gap:11px;grid-template-columns:repeat(3,1fr);margin:12px 0 18px}
-.perk{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px}
-.perk span{color:var(--accent);font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.perk strong{color:var(--text);display:block;font-size:14px;margin:6px 0 4px}
-.perk p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:0}
 .card-alert{background:var(--soft);border:1px solid var(--accent-dim);border-radius:11px;color:var(--muted);font-size:11px;line-height:1.55;margin:10px 0 14px;padding:11px 13px}
 .card-alert b{color:var(--text)}
 .miles-strip{align-items:center;background:linear-gradient(135deg,var(--miles-a),var(--miles-b));border:1px solid var(--miles-border);border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
@@ -426,9 +428,7 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
   .band strong{font-size:32px}.band small{text-align:left}
   .delivery,.tiles{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:1fr}
-  .flash-grid{grid-template-columns:1fr}.flash{min-height:190px}
   .fare-grid{grid-template-columns:1fr}.miles-strip{align-items:flex-start;flex-direction:column}
-  .perk-grid{grid-template-columns:1fr}
   .deal-head{align-items:flex-start;flex-direction:column;gap:5px}.deal-head h2{font-size:21px}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
@@ -522,33 +522,21 @@ if view == "Overview":
         f'<small>Checked {FLASH_DEALS_CHECKED}</small></div>',
         unsafe_allow_html=True,
     )
-    deal_filter = st.segmented_control(
-        "Deal category",
-        ("All", "Groceries", "Dining out", "Travel"),
-        default="All",
-        label_visibility="collapsed",
-        key="home_deal_filter",
-    ) if hasattr(st, "segmented_control") else st.radio(
-        "Deal category", ("All", "Groceries", "Dining out", "Travel"),
-        horizontal=True, label_visibility="collapsed", key="home_deal_filter",
-    )
-    deal_filter = deal_filter or "All"
-    visible_deals = [d for d in FLASH_DEALS if deal_filter == "All" or d[0] == deal_filter]
-    deal_cards = '<div class="flash-grid">'
-    for category, eyebrow, title, offer, detail, valid, url, source in visible_deals:
+    deals_table = ('<div class="shell"><table class="t deals"><thead><tr>'
+                   '<th>Category</th><th>Deal</th><th>Offer</th><th>Details</th>'
+                   '<th>Validity</th><th>Source</th></tr></thead><tbody>')
+    for category, eyebrow, title, offer, detail, valid, url, source in FLASH_DEALS:
         validity = f"Ends {valid}" if valid else "Live availability"
-        deal_cards += (
-            '<article class="flash"><div class="top">'
-            f'<span class="cat">{html.escape(category)}</span>'
-            f'<span class="until">{html.escape(validity)}</span></div>'
-            f'<h3>{html.escape(title)}</h3>'
-            f'<div class="offer">{html.escape(offer)}</div>'
-            f'<p>{html.escape(detail)}</p>'
-            f'<a href="{url}" target="_blank" rel="noopener">'
-            f'<span>{html.escape(eyebrow)} · {html.escape(source)}</span><span>View deal &rarr;</span></a></article>'
+        deals_table += (
+            f'<tr><td><span class="tag">{html.escape(category)}</span></td>'
+            f'<td class="nm">{html.escape(title)}<em>{html.escape(eyebrow)}</em></td>'
+            f'<td class="now">{html.escape(offer)}</td><td>{html.escape(detail)}</td>'
+            f'<td><span class="ends ok">{html.escape(validity)}</span></td>'
+            f'<td class="go"><a href="{url}" target="_blank" rel="noopener">'
+            f'{html.escape(source)} &rarr;</a></td></tr>'
         )
     st.markdown(
-        deal_cards + '</div>'
+        deals_table + '</tbody></table></div>'
         '<div class="home-note">Offers can sell out or change without notice. '
         'Open the original source to confirm price, availability and terms before buying.</div>',
         unsafe_allow_html=True,
@@ -733,26 +721,29 @@ elif view == DEALS_CATEGORY:
             'The Privilege Banking Visa Infinite card is a different product; tell me if that is the card you hold.</div>',
             unsafe_allow_html=True,
         )
-        perks_html = '<div class="perk-grid">'
+        perks_html = ('<div class="shell"><table class="t deals"><thead><tr>'
+                      '<th>Benefit</th><th>What you get</th><th>Important detail</th>'
+                      '</tr></thead><tbody>')
         for label, value, detail in UOB_VI_PERKS:
             perks_html += (
-                f'<div class="perk"><span>{html.escape(label)}</span>'
-                f'<strong>{html.escape(value)}</strong><p>{html.escape(detail)}</p></div>'
+                f'<tr><td class="nm">{html.escape(label)}</td>'
+                f'<td class="now">{html.escape(value)}</td><td>{html.escape(detail)}</td></tr>'
             )
-        st.markdown(perks_html + '</div>', unsafe_allow_html=True)
+        st.markdown(perks_html + '</tbody></table></div>', unsafe_allow_html=True)
         st.markdown(
             '<div class="sec"><h2>Published dining privileges</h2>'
             '<p>Use the card to pay and quote the offer when reserving</p></div>',
             unsafe_allow_html=True,
         )
         uob_table = ('<div class="shell"><table class="t deals"><thead><tr>'
-                     '<th>Restaurant</th><th>Benefit</th><th>Important terms</th><th></th>'
+                     '<th>Restaurant</th><th>Location</th><th>Benefit</th><th>Valid until</th><th></th>'
                      '</tr></thead><tbody>')
         uob_url = "https://www.uob.com.sg/personal/cards/privilege/visa-infinite-metal-card.page"
-        for venue, benefit, terms in UOB_VI_DINING:
+        for venue, location, benefit, validity in UOB_VI_DINING:
             uob_table += (
                 f'<tr><td class="nm">{html.escape(venue)}</td>'
-                f'<td class="now">{html.escape(benefit)}</td><td>{html.escape(terms)}</td>'
+                f'<td>{html.escape(location)}</td><td class="now">{html.escape(benefit)}</td>'
+                f'<td>{html.escape(validity)}</td>'
                 f'<td class="go"><a href="{uob_url}" target="_blank" rel="noopener">UOB terms &rarr;</a></td></tr>'
             )
         st.markdown(uob_table + '</tbody></table></div>', unsafe_allow_html=True)
@@ -794,10 +785,15 @@ elif view == DEALS_CATEGORY:
         found = re.findall(r"\d+(?:\.\d+)?", text)
         return min(float(n) for n in found) if found else float("inf")
 
+    def highest_price(text):
+        """Highest dollar figure shown, used for descending deal order."""
+        found = re.findall(r"\d+(?:\.\d+)?", text)
+        return max(float(n) for n in found) if found else float("-inf")
+
     live = [(r, *end_state(r[6])) for r in DINING_RESTAURANTS]
     expired = [r for r, state, _ in live if state == "expired"]
     live = [(r, state, lbl) for r, state, lbl in live if state != "expired"]
-    live.sort(key=lambda x: (entry_price(x[0][4]), x[0][0]))
+    live.sort(key=lambda x: (highest_price(x[0][4]), x[0][0]), reverse=True)
     price_band = st.segmented_control(
         "Price per person before ++", ("All prices", "Under S$35", "S$35–49", "S$50+"),
         default="All prices", label_visibility="collapsed", key="dining_price_band",
@@ -814,7 +810,7 @@ elif view == DEALS_CATEGORY:
 
     st.markdown(
         '<div class="sec"><h2>Where to eat</h2>'
-        f"<p>{len(live)} matching venues · lowest effective price first</p></div>",
+        f"<p>{len(live)} matching venues · highest listed deal price first</p></div>",
         unsafe_allow_html=True,
     )
     rest = ('<div class="shell"><table class="t deals"><thead><tr>'
