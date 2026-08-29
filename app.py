@@ -146,6 +146,19 @@ TRAVEL_LEVERS = (
     ("Right-size baggage", 1.5, "Price the whole trip, including bags and seats, before choosing the fare."),
 )
 
+# Home-screen offers, verified against the linked publisher pages. Keep this
+# intentionally small: it is a useful editorial shortlist, not a deal dump.
+# category, eyebrow, title, offer, detail, valid-through, url, source
+FLASH_DEALS_CHECKED = "29 Aug 2026"
+FLASH_DEALS = (
+    ("Groceries", "FairPrice weekly", "Australian strawberries", "S$4.95 · save S$3", "250 g pack; available while stocks last.", "2 Sep 2026", "https://www.fairprice.com.sg/tag/weekly-deals", "FairPrice"),
+    ("Groceries", "FairPrice weekly", "Shine Muscat grapes", "S$2.45 · save S$1.50", "500 g pack; available while stocks last.", "2 Sep 2026", "https://www.fairprice.com.sg/tag/weekly-deals", "FairPrice"),
+    ("Dining out", "Eatigo lunch", "50% off selected lunches", "Up to 50% off", "Live time slots include Crossroads Buffet, J65 and Food Capital.", None, "https://eatigo.com/en/regions/27/themes/15505", "Eatigo"),
+    ("Dining out", "Chope exclusive", "Gaia Ristorante", "20% off total bill", "Book and dine through Chope; à la carte only, exclusions apply.", "31 Aug 2026", "https://www.chope.co/singapore-restaurants/pages/testwebview", "Chope"),
+    ("Travel", "KrisFlyer", "Spontaneous Escapes", "30% off Saver awards", "Selected Singapore Airlines flights for travel in September.", "31 Aug 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/promotions/global/kf/kf-promo/kfescapes/", "Singapore Airlines"),
+    ("Travel", "Singapore Airlines", "Regional fares from Singapore", "Kuala Lumpur from S$158", "Economy return fare; selected travel periods and blackout dates apply.", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/", "Singapore Airlines"),
+)
+
 
 def sgd(value, dp=2):
     return f"S${value:,.{dp}f}"
@@ -285,6 +298,22 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 .travel-result span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
 .travel-result strong{color:var(--good);display:block;font-size:30px;letter-spacing:-1px;margin-top:4px}
 .travel-result small{color:var(--muted)}
+.deal-head{align-items:flex-end;display:flex;justify-content:space-between;gap:20px;margin:12px 0 14px}
+.deal-head h2{color:var(--text);font-size:25px;letter-spacing:-.7px;margin:0}
+.deal-head p{color:var(--muted);font-size:12px;line-height:1.5;margin:5px 0 0}
+.deal-head small{color:var(--dim);font-size:10.5px;white-space:nowrap}
+.flash-grid{display:grid;gap:13px;grid-template-columns:repeat(3,1fr);margin:10px 0 16px}
+.flash{background:linear-gradient(155deg,#172231,#101720);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;min-height:208px;padding:17px;position:relative;transition:border-color .15s,transform .15s}
+.flash:hover{border-color:#405671;transform:translateY(-2px)}
+.flash .top{align-items:center;display:flex;justify-content:space-between;gap:8px}
+.flash .cat{background:var(--soft);border-radius:999px;color:var(--accent);font-size:9.5px;font-weight:700;letter-spacing:.07em;padding:4px 8px;text-transform:uppercase}
+.flash .until{color:var(--dim);font-size:9.5px}
+.flash h3{color:var(--text);font-size:16px;letter-spacing:-.25px;margin:17px 0 5px}
+.flash .offer{color:var(--good);font-size:21px;font-weight:700;letter-spacing:-.55px}
+.flash p{color:var(--muted);font-size:11.5px;line-height:1.5;margin:7px 0 16px}
+.flash a{align-items:center;border-top:1px solid var(--border);color:var(--accent);display:flex;font-size:11px;font-weight:700;justify-content:space-between;margin-top:auto;padding-top:11px;text-decoration:none}
+.flash a:hover{color:#ffc39d}
+.home-note{color:var(--dim);font-size:10.5px;line-height:1.6;margin:5px 1px}
 
 @media(max-width:760px){
   .block-container{padding:.7rem .5rem 2rem}
@@ -294,6 +323,8 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
   .band strong{font-size:32px}.band small{text-align:left}
   .cards,.delivery,.tiles{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:1fr}
+  .flash-grid{grid-template-columns:1fr}.flash{min-height:190px}
+  .deal-head{align-items:flex-start;flex-direction:column;gap:5px}.deal-head h2{font-size:21px}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
   .t.deals{min-width:720px}
@@ -306,7 +337,7 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 }
 </style>
 <div class="hero"><div class="mark">&#128722;</div><div><h1>Price Basket</h1>
-<p>Lifestyle spend, by category &mdash; and what is realistically recoverable from each.</p></div></div>
+<p>Useful prices and short-lived deals across the things you actually spend on.</p></div></div>
 """, unsafe_allow_html=True)
 
 # --------------------------------------------------- state + category nav ----
@@ -359,23 +390,41 @@ total_saving = sum(r["saving"] for r in rows)
 
 # ------------------------------------------------------------- overview ----
 if view == "Overview":
-    biggest = max(rows, key=lambda r: r["saving"])["name"] if total_saving else "&mdash;"
     st.markdown(
-        f'<div class="band"><div><span>Total recoverable per year</span>'
-        f'<strong>{sgd(total_saving, 0)}</strong></div>'
-        f'<small>on {sgd(total_spend, 0)} of tracked annual spend<br>'
-        f'biggest single pool: <b>{html.escape(biggest)}</b></small></div>',
+        f'<div class="deal-head"><div><h2>Worth a look right now</h2>'
+        '<p>A short list of live offers across groceries, dining and travel.</p></div>'
+        f'<small>Checked {FLASH_DEALS_CHECKED}</small></div>',
         unsafe_allow_html=True,
     )
-    st.markdown(
-        '<div class="cards">' + "".join(card_html(r, total_saving) for r in rows) + "</div>",
-        unsafe_allow_html=True,
+    deal_filter = st.segmented_control(
+        "Deal category",
+        ("All", "Groceries", "Dining out", "Travel"),
+        default="All",
+        label_visibility="collapsed",
+        key="home_deal_filter",
+    ) if hasattr(st, "segmented_control") else st.radio(
+        "Deal category", ("All", "Groceries", "Dining out", "Travel"),
+        horizontal=True, label_visibility="collapsed", key="home_deal_filter",
     )
+    deal_filter = deal_filter or "All"
+    visible_deals = [d for d in FLASH_DEALS if deal_filter == "All" or d[0] == deal_filter]
+    deal_cards = '<div class="flash-grid">'
+    for category, eyebrow, title, offer, detail, valid, url, source in visible_deals:
+        validity = f"Ends {valid}" if valid else "Live availability"
+        deal_cards += (
+            '<article class="flash"><div class="top">'
+            f'<span class="cat">{html.escape(category)}</span>'
+            f'<span class="until">{html.escape(validity)}</span></div>'
+            f'<h3>{html.escape(title)}</h3>'
+            f'<div class="offer">{html.escape(offer)}</div>'
+            f'<p>{html.escape(detail)}</p>'
+            f'<a href="{url}" target="_blank" rel="noopener">'
+            f'<span>{html.escape(eyebrow)} · {html.escape(source)}</span><span>View deal &rarr;</span></a></article>'
+        )
     st.markdown(
-        '<div class="note">Pick a category above to edit its assumptions. '
-        f"Only {html.escape(DATA_CATEGORY)} is backed by verified like-for-like "
-        "prices today; every other category is your estimate until a data source "
-        "is plugged in.</div>",
+        deal_cards + '</div>'
+        '<div class="home-note">Offers can sell out or change without notice. '
+        'Open the original source to confirm price, availability and terms before buying.</div>',
         unsafe_allow_html=True,
     )
 
