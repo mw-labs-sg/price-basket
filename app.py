@@ -106,6 +106,24 @@ DINING_CARDS = (
     ("OCBC 365", "5%", "S$800-1,600", "S$80-160", 1920),
     ("POSB Everyday", "5%", "S$800", "S$20", 240),
 )
+UOB_VI_PERKS = (
+    ("Miles", "1.4 mpd local · 2.4 mpd overseas", "No miles-conversion fee. Selected transaction categories are excluded."),
+    ("Renewal", "25,000 miles + up to 15,000 bonus", "25,000 after paying the annual fee; another 15,000 after S$100,000 qualifying annual spend."),
+    ("Airport", "12 lounge passes per membership year", "DragonPass access at 1,400+ lounges; passes can be shared with accompanying guests."),
+    ("Insurance", "Up to US$1m travel accident cover", "Charge the full travel fare to the card; also includes specified inconvenience and purchase-protection cover."),
+    ("Hotels", "IHG 20% off · Agoda stay 3 pay 2", "Participating properties and booking windows only; Agoda discount is capped at US$150 per transaction."),
+    ("Dining", "Up to 30% off restaurants", "Plus up to 25% off participating airport restaurants through DragonPass."),
+    ("Concierge", "24/7 Visa Infinite concierge", "Dining, travel and lifestyle assistance: 1800 253 2288 or +65 6253 2288 overseas."),
+    ("Golf", "Complimentary weekday green fees", "Participating regional courses; advance booking and individual course terms apply."),
+    ("Assistance", "Home, vehicle, travel and medical help", "Home assistance up to S$100 per visit, twice yearly; separate limits and terms apply."),
+    ("Fee", "S$654 yearly · non-waivable", "First supplementary card is free for life; later supplementary cards are chargeable."),
+)
+UOB_VI_DINING = (
+    ("Sheraton Towers Singapore", "30% off à la carte food", "Hotel and blackout-date terms apply."),
+    ("Capasso", "15% off à la carte food", "Plus priority reservations and one complimentary aperitif per diner; valid through 31 Dec 2026."),
+    ("NOX – Dine in the Dark", "Complimentary cocktail or Prosecco", "Reservation required; quote the UOB Visa Infinite Metal offer. Valid through 30 Dec 2026."),
+    ("Sapoto / Sushi Yujo", "Complimentary 300ml house-pour carafe", "Current published Visa Infinite Metal privilege; merchant terms apply."),
+)
 # Specific restaurants, cross-checked across two independent guides on the
 # date above. name, venue, cuisine/what, was ++, now ++, cards, ends
 # "ends" of None means no published end date. Prices are ++ (add ~19.9% for
@@ -145,25 +163,40 @@ TRAVEL_LEVERS = (
 )
 TRAVEL_DEALS_CHECKED = "29 Aug 2026"
 SCHOOL_HOLIDAY_WINDOWS = {
-    "September break": ("4–13 Sep 2026", "Teachers' Day + MOE Term 3 break", "4 Sep 2026", "13 Sep 2026"),
-    "Year-end break": ("21 Nov–31 Dec 2026", "MOE Term 4 school holiday", "21 Nov 2026", "31 Dec 2026"),
+    "March": ("14–22 Mar 2026", "MOE Term 1 school holiday", "14 Mar 2026", "22 Mar 2026"),
+    "June": ("30 May–28 Jun 2026", "MOE Term 2 school holiday", "30 May 2026", "28 Jun 2026"),
+    "September": ("4–13 Sep 2026", "Teachers' Day + MOE Term 3 break", "4 Sep 2026", "13 Sep 2026"),
+    "December": ("21 Nov–31 Dec 2026", "MOE Term 4 school holiday", "21 Nov 2026", "31 Dec 2026"),
 }
-# group, destination, indicative return fare, September dates, year-end dates,
-# trip length, why it works, source URL. Sale fares are indicative and may not
+# group, destination, indicative return fare, trip length, why it works,
+# source URL. Sale fares are indicative and may not
 # be available on the suggested family dates.
 TRIP_IDEAS = (
-    ("Australia & NZ", "Perth", "From S$548", "4–12 Sep", "21–29 Nov", "8 nights", "Easy first Australia trip; beaches, wildlife and a compact city.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Australia & NZ", "Sydney", "From S$588", "4–13 Sep", "28 Nov–6 Dec", "9 nights", "Harbour sights plus Blue Mountains; spring weather suits family days out.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Australia & NZ", "Melbourne", "From S$688", "4–13 Sep", "5–13 Dec", "9 nights", "City, wildlife and a Great Ocean Road add-on without changing hotels often.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Australia & NZ", "Auckland + Rotorua", "From S$1,288", "4–13 Sep", "27 Nov–6 Dec", "9 nights", "A good North Island loop with geothermal parks and short driving days.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Japan", "Osaka + Kyoto", "From S$808", "4–13 Sep", "21–29 Nov", "9 nights", "One base or a simple two-city split; late November often catches autumn colour.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Japan", "Tokyo", "From S$1,008", "4–13 Sep", "28 Nov–6 Dec", "9 nights", "Big family variety; year-end dates are cooler and generally more comfortable.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Japan", "Hokkaido", "Check live fare", "4–13 Sep", "12–20 Dec", "8 nights", "Choose September for outdoors or December for an early snow-focused trip.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
-    ("Regional", "Penang", "From S$159", "5–9 Sep", "21–25 Nov", "4 nights", "Short, food-led break with little planning overhead.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
-    ("Regional", "Bangkok", "From S$213", "5–9 Sep", "21–25 Nov", "4 nights", "Simple city break with family hotels, food and indoor options.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
-    ("Regional", "Bali", "From S$298", "4–10 Sep", "21–27 Nov", "6 nights", "Works best with one resort base; September is typically the stronger window.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
-    ("Regional", "Hanoi", "From S$328", "4–10 Sep", "28 Nov–4 Dec", "6 nights", "Pair the city with Ninh Binh for a compact culture-and-nature trip.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Perth", "From S$548", "8 nights", "Easy first Australia trip; beaches, wildlife and a compact city.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Sydney", "From S$588", "9 nights", "Harbour sights plus Blue Mountains; spring weather suits family days out.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Melbourne", "From S$688", "9 nights", "City, wildlife and a Great Ocean Road add-on without changing hotels often.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Australia & NZ", "Auckland + Rotorua", "From S$1,288", "9 nights", "A good North Island loop with geothermal parks and short driving days.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Osaka + Kyoto", "From S$808", "9 nights", "One base or a simple two-city split; late November often catches autumn colour.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Tokyo", "From S$1,008", "9 nights", "Big family variety; year-end dates are cooler and generally more comfortable.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Japan", "Hokkaido", "Check live fare", "8 nights", "Choose September for outdoors or December for an early snow-focused trip.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Penang", "From S$159", "4 nights", "Short, food-led break with little planning overhead.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Bangkok", "From S$213", "4 nights", "Simple city break with family hotels, food and indoor options.", "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Regional", "Bali", "From S$298", "6 nights", "Works best with one resort base; September is typically the stronger window.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Regional", "Hanoi", "From S$328", "6 nights", "Pair the city with Ninh Binh for a compact culture-and-nature trip.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
 )
+TRIP_DATES = {
+    "Perth": ("14–22 Mar", "6–14 Jun", "4–12 Sep", "21–29 Nov"),
+    "Sydney": ("14–22 Mar", "6–14 Jun", "4–13 Sep", "28 Nov–6 Dec"),
+    "Melbourne": ("14–22 Mar", "6–14 Jun", "4–13 Sep", "5–13 Dec"),
+    "Auckland + Rotorua": ("14–22 Mar", "6–14 Jun", "4–13 Sep", "27 Nov–6 Dec"),
+    "Osaka + Kyoto": ("14–22 Mar", "6–14 Jun", "4–13 Sep", "21–29 Nov"),
+    "Tokyo": ("14–22 Mar", "6–14 Jun", "4–13 Sep", "28 Nov–6 Dec"),
+    "Hokkaido": ("14–22 Mar", "6–14 Jun", "4–12 Sep", "12–20 Dec"),
+    "Penang": ("14–18 Mar", "6–10 Jun", "5–9 Sep", "21–25 Nov"),
+    "Bangkok": ("14–18 Mar", "6–10 Jun", "5–9 Sep", "21–25 Nov"),
+    "Bali": ("14–20 Mar", "6–12 Jun", "4–10 Sep", "21–27 Nov"),
+    "Hanoi": ("14–20 Mar", "6–12 Jun", "4–10 Sep", "28 Nov–4 Dec"),
+}
 # destination: hotel, area, family fit, official page
 HOTEL_IDEAS = {
     "Perth": ("Holiday Inn Perth City Centre", "Perth CBD", "King + two singles in a separate family sleeping area; kids stay and eat free terms apply.", "https://perth.holidayinn.com/stay/family-room/"),
@@ -237,7 +270,10 @@ html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
 
 /* category nav pills */
 div[data-testid="stPills"]{margin:5px 0 10px}
-div[data-testid="stPills"] button{border:1px solid var(--border)!important;border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:7px 17px!important}
+div[data-testid="stPills"] button,div[data-testid="stSegmentedControl"] button,div[data-testid="stButtonGroup"] button{background:var(--surface)!important;border:1px solid var(--border)!important;border-radius:999px!important;color:var(--text)!important;font-size:13.5px!important;font-weight:600!important;padding:7px 17px!important}
+div[data-testid="stPills"] button[aria-selected="true"],div[data-testid="stPills"] button[aria-pressed="true"],div[data-testid="stSegmentedControl"] button[aria-pressed="true"],div[data-testid="stButtonGroup"] button[data-selected="true"]{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--mark-text)!important}
+div[data-testid="stButtonGroup"] button p{color:inherit!important}
+button[kind="secondary"]{background:var(--surface)!important;border-color:var(--border)!important;color:var(--text)!important}
 div[data-baseweb="select"]>div,div[data-baseweb="input"]>div{background:var(--surface)!important;border-color:var(--border)!important;color:var(--text)!important}
 div[data-baseweb="select"] *,div[data-baseweb="input"] input{color:var(--text)!important}
 div[data-baseweb="popover"] ul{background:var(--surface)!important;color:var(--text)!important}
@@ -272,8 +308,15 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 
 .shell{background:var(--surface);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);overflow:auto}
 .t{border-collapse:separate;border-spacing:0;color:var(--text);font-size:13px;min-width:760px;width:100%}
-.t thead th{background:var(--raised);border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.07em;padding:11px 10px;position:sticky;text-align:right;text-transform:uppercase;top:0;z-index:3}
+.t thead th{background:var(--raised);border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.07em;padding:11px 10px;position:sticky;text-align:right;text-transform:uppercase;top:31px;z-index:3}
+.t thead tr.superhead th{background:var(--surface);border-bottom:1px solid var(--border);color:var(--dim);font-size:9px;height:31px;letter-spacing:.11em;padding:7px 10px;text-align:center;top:0;z-index:5}
+.t thead tr.superhead th:first-child{text-align:left}
 .t thead th.itemh{left:0;text-align:left;z-index:4}
+.t thead tr.superhead th.itemh{z-index:7}
+.t thead th.store-ss{box-shadow:inset 0 3px 0 var(--good);color:var(--good)}
+.t thead th.store-cs{box-shadow:inset 0 3px 0 #d98ad8;color:#d98ad8}
+.t thead th.store-fp{box-shadow:inset 0 3px 0 #6db7ff;color:#6db7ff}
+.t thead th.store-rm{box-shadow:inset 0 3px 0 var(--accent);color:var(--accent)}
 .t thead th.savh{background:#233025;color:var(--good)}
 .t thead th em{color:var(--dim);display:block;font-size:9.5px;font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none}
 .t td{border-bottom:1px solid var(--border);padding:9px 10px;vertical-align:middle}
@@ -362,6 +405,13 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 .hotel-pick small{color:var(--muted);display:block;font-size:9.5px;line-height:1.45}
 .fare .actions{display:flex;gap:12px;margin-top:auto}
 .fare .actions a{margin-top:0}
+.perk-grid{display:grid;gap:11px;grid-template-columns:repeat(3,1fr);margin:12px 0 18px}
+.perk{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px}
+.perk span{color:var(--accent);font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.perk strong{color:var(--text);display:block;font-size:14px;margin:6px 0 4px}
+.perk p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:0}
+.card-alert{background:var(--soft);border:1px solid var(--accent-dim);border-radius:11px;color:var(--muted);font-size:11px;line-height:1.55;margin:10px 0 14px;padding:11px 13px}
+.card-alert b{color:var(--text)}
 .miles-strip{align-items:center;background:linear-gradient(135deg,var(--miles-a),var(--miles-b));border:1px solid var(--miles-border);border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
 .miles-strip span{color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .miles-strip strong{color:var(--text);display:block;font-size:17px;margin:4px 0}
@@ -378,6 +428,7 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
   .picks{grid-template-columns:1fr}
   .flash-grid{grid-template-columns:1fr}.flash{min-height:190px}
   .fare-grid{grid-template-columns:1fr}.miles-strip{align-items:flex-start;flex-direction:column}
+  .perk-grid{grid-template-columns:1fr}
   .deal-head{align-items:flex-start;flex-direction:column;gap:5px}.deal-head h2{font-size:21px}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
@@ -510,10 +561,10 @@ else:
     share = (active["saving"] / total_saving * 100) if total_saving else 0
     if view == "Travel":
         st.markdown(
-            '<div class="band"><div><span>Next family travel window</span>'
-            '<strong>4&ndash;13 Sep</strong></div>'
-            '<small>Teachers\' Day + MOE Term 3 break<br>'
-            '<b>Year-end:</b> 21 Nov&ndash;31 Dec 2026</small></div>',
+            '<div class="band"><div><span>Family travel planner</span>'
+            '<strong>Mar · Jun · Sep · Dec</strong></div>'
+            '<small>Four MOE school-holiday planning blocks<br>'
+            '<b>Flights + family hotels</b> kept together</small></div>',
             unsafe_allow_html=True,
         )
     else:
@@ -605,10 +656,13 @@ if view == DATA_CATEGORY:
             delivery += f'<div class="dcard"><b>{html.escape(label)} delivery</b>{fee}<em>{free}</em></div>'
         st.markdown(delivery + "</div>", unsafe_allow_html=True)
 
-        head = '<div class="shell"><table class="t"><thead><tr><th class="itemh">Item</th>'
+        head = ('<div class="shell"><table class="t"><thead>'
+                '<tr class="superhead"><th class="itemh">Product</th>'
+                '<th colspan="4">Compare supermarket prices</th><th>Potential saving</th></tr>'
+                '<tr><th class="itemh">Item <em>pack size</em></th>')
         for key, label, _ in STORES:
             caption = "you pay now" if key == "rm" else "price &middot; per unit"
-            head += f"<th>{html.escape(label)}<em>{caption}</em></th>"
+            head += f'<th class="store-{key}">{html.escape(label)}<em>{caption}</em></th>'
         head += '<th class="savh">Sheng Siong<em>savings / year</em></th></tr></thead><tbody>'
 
         body = ""
@@ -666,6 +720,51 @@ elif view == DEALS_CATEGORY:
         "expire constantly, so re-verify a row before you commit to it</div>",
         unsafe_allow_html=True,
     )
+    dining_section = st.segmented_control(
+        "Dining section", ("Deals by price", "My UOB Visa Infinite"),
+        default="Deals by price", label_visibility="collapsed", key="dining_section",
+    ) if hasattr(st, "segmented_control") else st.radio(
+        "Dining section", ("Deals by price", "My UOB Visa Infinite"),
+        horizontal=True, label_visibility="collapsed", key="dining_section",
+    )
+    if dining_section == "My UOB Visa Infinite":
+        st.markdown(
+            '<div class="card-alert"><b>Card assumed:</b> UOB Visa Infinite Metal Card. '
+            'The Privilege Banking Visa Infinite card is a different product; tell me if that is the card you hold.</div>',
+            unsafe_allow_html=True,
+        )
+        perks_html = '<div class="perk-grid">'
+        for label, value, detail in UOB_VI_PERKS:
+            perks_html += (
+                f'<div class="perk"><span>{html.escape(label)}</span>'
+                f'<strong>{html.escape(value)}</strong><p>{html.escape(detail)}</p></div>'
+            )
+        st.markdown(perks_html + '</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="sec"><h2>Published dining privileges</h2>'
+            '<p>Use the card to pay and quote the offer when reserving</p></div>',
+            unsafe_allow_html=True,
+        )
+        uob_table = ('<div class="shell"><table class="t deals"><thead><tr>'
+                     '<th>Restaurant</th><th>Benefit</th><th>Important terms</th><th></th>'
+                     '</tr></thead><tbody>')
+        uob_url = "https://www.uob.com.sg/personal/cards/privilege/visa-infinite-metal-card.page"
+        for venue, benefit, terms in UOB_VI_DINING:
+            uob_table += (
+                f'<tr><td class="nm">{html.escape(venue)}</td>'
+                f'<td class="now">{html.escape(benefit)}</td><td>{html.escape(terms)}</td>'
+                f'<td class="go"><a href="{uob_url}" target="_blank" rel="noopener">UOB terms &rarr;</a></td></tr>'
+            )
+        st.markdown(uob_table + '</tbody></table></div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="note"><b>Worth remembering:</b> the S$654 annual fee is non-waivable. '
+            'The card returns 25,000 renewal miles after the fee is paid, with another 15,000 miles '
+            'after S$100,000 qualifying annual spend. Airport lounge access changed to 12 passes per '
+            'membership year from 1 June 2026.</div>',
+            unsafe_allow_html=True,
+        )
+        st.stop()
+
     st.markdown(
         '<div class="picks">'
         '<div class="pick"><span>Best free option</span><strong>Eatigo</strong>'
@@ -699,10 +798,23 @@ elif view == DEALS_CATEGORY:
     expired = [r for r, state, _ in live if state == "expired"]
     live = [(r, state, lbl) for r, state, lbl in live if state != "expired"]
     live.sort(key=lambda x: (entry_price(x[0][4]), x[0][0]))
+    price_band = st.segmented_control(
+        "Price per person before ++", ("All prices", "Under S$35", "S$35–49", "S$50+"),
+        default="All prices", label_visibility="collapsed", key="dining_price_band",
+    ) if hasattr(st, "segmented_control") else st.radio(
+        "Price per person before ++", ("All prices", "Under S$35", "S$35–49", "S$50+"),
+        horizontal=True, label_visibility="collapsed", key="dining_price_band",
+    )
+    if price_band == "Under S$35":
+        live = [x for x in live if entry_price(x[0][4]) < 35]
+    elif price_band == "S$35–49":
+        live = [x for x in live if 35 <= entry_price(x[0][4]) < 50]
+    elif price_band == "S$50+":
+        live = [x for x in live if entry_price(x[0][4]) >= 50]
 
     st.markdown(
         '<div class="sec"><h2>Where to eat</h2>'
-        f"<p>{len(live)} venues with a live 1-for-1, cheapest first</p></div>",
+        f"<p>{len(live)} matching venues · lowest effective price first</p></div>",
         unsafe_allow_html=True,
     )
     rest = ('<div class="shell"><table class="t deals"><thead><tr>'
@@ -801,16 +913,22 @@ elif view == "Travel":
         unsafe_allow_html=True,
     )
 
-    holiday_col, destination_col = st.columns([1.15, 1])
-    with holiday_col:
-        holiday_period = st.selectbox("School holiday", tuple(SCHOOL_HOLIDAY_WINDOWS), key="travel_holiday")
-    with destination_col:
-        travel_group = st.selectbox(
-            "Where to", ("All destinations", "Australia & NZ", "Japan", "Regional"),
-            key="travel_group",
-        )
+    if st.session_state.get("travel_holiday") not in SCHOOL_HOLIDAY_WINDOWS:
+        st.session_state["travel_holiday"] = "September"
+    holiday_period = st.segmented_control(
+        "Holiday block", tuple(SCHOOL_HOLIDAY_WINDOWS),
+        label_visibility="collapsed", key="travel_holiday",
+    ) if hasattr(st, "segmented_control") else st.radio(
+        "Holiday block", tuple(SCHOOL_HOLIDAY_WINDOWS), horizontal=True,
+        label_visibility="collapsed", key="travel_holiday",
+    )
+    holiday_period = holiday_period or "September"
+    travel_group = st.selectbox(
+        "Where to", ("All destinations", "Australia & NZ", "Japan", "Regional"),
+        key="travel_group",
+    )
     holiday_dates, holiday_note, _holiday_start, _holiday_end = SCHOOL_HOLIDAY_WINDOWS[holiday_period]
-    date_index = 3 if holiday_period == "September break" else 4
+    date_index = tuple(SCHOOL_HOLIDAY_WINDOWS).index(holiday_period)
     st.markdown(
         f'<div class="miles-strip"><div><span>Official MOE window</span>'
         f'<strong>{html.escape(holiday_dates)}</strong>'
@@ -824,8 +942,8 @@ elif view == "Travel":
         if travel_group == "All destinations" or idea[0] == travel_group
     ]
     fares_html = '<div class="fare-grid">'
-    for group, destination, price, sep_dates, year_end_dates, nights, why, url in matching_fares:
-        suggested_dates = sep_dates if date_index == 3 else year_end_dates
+    for group, destination, price, nights, why, url in matching_fares:
+        suggested_dates = TRIP_DATES[destination][date_index]
         hotel_name, hotel_area, hotel_fit, hotel_url = HOTEL_IDEAS[destination]
         fares_html += (
             '<article class="fare"><div class="route">'
