@@ -247,7 +247,7 @@ def sgd(value, dp=2):
     return f"S${value:,.{dp}f}"
 
 
-st.session_state.setdefault("appearance", "Dark")
+st.session_state.setdefault("appearance", "Light")
 appearance = st.session_state["appearance"]
 
 
@@ -261,9 +261,9 @@ st.markdown("""
   /* Deep blue-charcoal keeps dense comparison data calm and legible. */
   --bg:#090d14; --surface:#111824; --raised:#182231; --border:#263448;
   --text:#f5f7fb; --muted:#aeb9ca; --dim:#7f8da3;
-  /* Coral adds warmth without turning the entire interface brown. */
-  --accent:#ffad7a; --accent-deep:#f18455; --accent-dim:#8e4d32;
-  --soft:rgba(255,173,122,.13); --softer:rgba(255,173,122,.07);
+  /* Blue is reserved for navigation, links and active controls. */
+  --accent:#6ea8fe; --accent-deep:#3b82f6; --accent-dim:#28558d;
+  --soft:rgba(110,168,254,.14); --softer:rgba(110,168,254,.07);
   /* Mint is reserved for one meaning only: money saved / cheapest option. */
   --good:#72dfb0; --good-deep:#40b987; --good-dim:#286e56;
   --good-soft:rgba(114,223,176,.13); --good-softer:rgba(114,223,176,.07);
@@ -281,7 +281,7 @@ html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
 ::selection{background:var(--accent-dim);color:#fff}
 
 .hero{align-items:center;display:flex;gap:13px;margin-bottom:15px}
-.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;box-shadow:0 8px 24px rgba(241,132,85,.25);color:var(--mark-text);display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
+.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;box-shadow:0 8px 24px rgba(59,130,246,.24);color:var(--mark-text);display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
 .hero h1{color:var(--text);font-size:30px;letter-spacing:-.9px;margin:0}
 .hero p{color:var(--muted);font-size:13px;margin:4px 0 0}
 
@@ -297,7 +297,7 @@ div[data-baseweb="popover"] ul{background:var(--surface)!important;color:var(--t
 div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 
 .band{background:linear-gradient(135deg,var(--band-a),var(--band-b));border:1px solid var(--band-border);border-radius:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 16px;padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
-.band::after{background:radial-gradient(circle at 88% 12%,rgba(240,168,105,.22),transparent 62%);content:'';inset:0;position:absolute}
+.band::after{background:radial-gradient(circle at 88% 12%,rgba(96,165,250,.22),transparent 62%);content:'';inset:0;position:absolute}
 .band>*{position:relative;z-index:1}
 .band span{color:var(--accent);display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
 .band strong{color:var(--text);display:block;font-size:40px;letter-spacing:-1.6px;line-height:1.04;margin-top:5px}
@@ -432,16 +432,16 @@ if appearance == "Light":
     st.markdown("""
     <style>
     :root{
-      --bg:#f5f3ee;--surface:#ffffff;--raised:#eeeae2;--border:#d9d3c8;
-      --text:#1e2937;--muted:#5f6b78;--dim:#7b8490;
-      --accent:#d85f32;--accent-deep:#bd4720;--accent-dim:#e9a083;
-      --soft:rgba(216,95,50,.10);--softer:rgba(216,95,50,.05);
+      --bg:#f4f7fb;--surface:#ffffff;--raised:#edf2f7;--border:#d7e0eb;
+      --text:#172033;--muted:#526176;--dim:#748197;
+      --accent:#2563eb;--accent-deep:#1d4ed8;--accent-dim:#9ab7f4;
+      --soft:rgba(37,99,235,.09);--softer:rgba(37,99,235,.045);
       --good:#187a58;--good-deep:#116143;--good-dim:#98cbb9;
       --good-soft:rgba(24,122,88,.10);--good-softer:rgba(24,122,88,.05);
-      --shadow:0 16px 42px rgba(52,43,32,.10);
-      --app-bg:radial-gradient(circle at 78% -10%,#fff1e6 0,transparent 34%),var(--bg);
-      --band-a:#fff9f3;--band-b:#f3eee7;--band-border:#ddd3c5;
-      --pick-top:#fffaf4;--flash-a:#fffdf9;--flash-b:#f7f3ed;--flash-hover:#c9b9a8;
+      --shadow:0 16px 42px rgba(27,52,82,.09);
+      --app-bg:radial-gradient(circle at 78% -10%,#e8f1ff 0,transparent 34%),var(--bg);
+      --band-a:#f7faff;--band-b:#edf3fb;--band-border:#d1ddec;
+      --pick-top:#f7faff;--flash-a:#ffffff;--flash-b:#f2f6fb;--flash-hover:#afc4dd;
       --miles-a:#f3fbf7;--miles-b:#ffffff;--miles-border:#b7d8ca;--mark-text:#ffffff;
       color-scheme:light;
     }
