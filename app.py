@@ -62,14 +62,15 @@ DELIVERY = {
 # cards and the totals all derive from this tuple. DATA_CATEGORY below names
 # the one category that has a real price table behind it.
 SAVINGS_CATEGORIES = (
-    ("Food", 24000, 12, "Groceries plus dining and delivery. The only category with verified prices below."),
+    ("Groceries", 12000, 10, "The only category with verified like-for-like prices. Savings are a real basket comparison, not an estimate."),
+    ("Dining out", 15000, 15, "Restaurants, hawker, delivery. Usually the largest recoverable pool, but nothing here is measured yet."),
     ("Health", 8000, 10, "Insurance, medical, dental, fitness. Savings come from policy review, not daily choices."),
     ("Travel", 15000, 8, "Large and lumpy. Savings come from timing and fare class, not loyalty."),
     ("Culture", 4000, 15, "Entertainment, subscriptions, events. High percentage, small base."),
     ("Education", 6000, 8, "Courses, enrichment, tuition. Priced by provider; little room to shop around."),
     ("Parenting", 9000, 10, "Childcare, gear, activities. Gear is comparable; childcare mostly is not."),
 )
-DATA_CATEGORY = "Food"
+DATA_CATEGORY = "Groceries"
 # Per-item search URLs. Sheng Siong has no public search endpoint I could
 # verify, so it falls back to a scoped web search rather than a dead link.
 LINK_TEMPLATES = {
@@ -219,7 +220,7 @@ def card_html(row, total, lead=False):
     share = (row["saving"] / total * 100) if total else 0
     hint = ""
     if row["name"] == DATA_CATEGORY:
-        hint = f'<div class="hint">Verified grocery basket alone implies {sgd(BASKET_ANNUAL, 0)}/yr</div>'
+        hint = f'<div class="hint">Verified basket comparison: {sgd(BASKET_ANNUAL, 0)}/yr</div>'
     return (
         f'<div class="card{" lead" if lead else ""}"><h3>{html.escape(row["name"])}</h3>'
         f'<div class="big">{sgd(row["saving"], 0)}</div>'
@@ -286,7 +287,7 @@ else:
     st.markdown(f'<div class="why">{html.escape(active["note"])}</div>', unsafe_allow_html=True)
 
 # ------------------------------------------- grocery price detail (data) ----
-if view in ("Overview", DATA_CATEGORY):
+if view == DATA_CATEGORY:
     st.markdown(
         '<div class="sec"><h2>Grocery price detail</h2>'
         "<p>The only category with verified like-for-like data</p></div>",
@@ -401,7 +402,9 @@ if view in ("Overview", DATA_CATEGORY):
         )
 
 # ------------------------------------------------- categories without data ----
-else:
+# Overview deliberately falls through with nothing extra -- it stays a clean
+# summary, no detail tables underneath.
+elif view != "Overview":
     st.markdown(
         f'<div class="sec"><h2>{html.escape(view)} detail</h2>'
         "<p>No data source connected yet</p></div>",
