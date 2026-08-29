@@ -397,21 +397,6 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 .deal-head small{color:var(--dim);font-size:10.5px;white-space:nowrap}
 .tag{background:var(--soft);border-radius:999px;color:var(--accent);display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;padding:4px 7px;text-transform:uppercase;white-space:nowrap}
 .home-note{color:var(--dim);font-size:10.5px;line-height:1.6;margin:5px 1px}
-.fare-grid{display:grid;gap:11px;grid-template-columns:repeat(3,1fr);margin:10px 0 15px}
-.fare{background:var(--surface);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;padding:15px}
-.fare .route{align-items:flex-start;display:flex;gap:8px;justify-content:space-between}
-.fare .route span{color:var(--dim);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
-.fare h3{color:var(--text);font-size:16px;margin:10px 0 4px}
-.fare .price{color:var(--good);font-size:22px;font-weight:700;letter-spacing:-.5px}
-.fare p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:5px 0 13px}
-.fare a{color:var(--accent);font-size:11px;font-weight:700;margin-top:auto;text-decoration:none}
-.fare a:hover{text-decoration:underline}
-.hotel-pick{background:var(--raised);border:1px solid var(--border);border-radius:10px;margin:2px 0 13px;padding:10px 11px}
-.hotel-pick span{color:var(--dim);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
-.hotel-pick strong{color:var(--text);display:block;font-size:12px;margin:4px 0 3px}
-.hotel-pick small{color:var(--muted);display:block;font-size:9.5px;line-height:1.45}
-.fare .actions{display:flex;gap:12px;margin-top:auto}
-.fare .actions a{margin-top:0}
 .card-alert{background:var(--soft);border:1px solid var(--accent-dim);border-radius:11px;color:var(--muted);font-size:11px;line-height:1.55;margin:10px 0 14px;padding:11px 13px}
 .card-alert b{color:var(--text)}
 .miles-strip{align-items:center;background:linear-gradient(135deg,var(--miles-a),var(--miles-b));border:1px solid var(--miles-border);border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
@@ -428,7 +413,7 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
   .band strong{font-size:32px}.band small{text-align:left}
   .delivery,.tiles{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:1fr}
-  .fare-grid{grid-template-columns:1fr}.miles-strip{align-items:flex-start;flex-direction:column}
+  .miles-strip{align-items:flex-start;flex-direction:column}
   .deal-head{align-items:flex-start;flex-direction:column;gap:5px}.deal-head h2{font-size:21px}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
@@ -937,25 +922,24 @@ elif view == "Travel":
         idea for idea in TRIP_IDEAS
         if travel_group == "All destinations" or idea[0] == travel_group
     ]
-    fares_html = '<div class="fare-grid">'
+    fares_html = ('<div class="shell"><table class="t deals"><thead><tr>'
+                  '<th>Region</th><th>Destination & dates</th><th>Return fare</th>'
+                  '<th>Family hotel</th><th>Why it works</th><th>Book</th>'
+                  '</tr></thead><tbody>')
     for group, destination, price, nights, why, url in matching_fares:
         suggested_dates = TRIP_DATES[destination][date_index]
         hotel_name, hotel_area, hotel_fit, hotel_url = HOTEL_IDEAS[destination]
         fares_html += (
-            '<article class="fare"><div class="route">'
-            f'<span>{html.escape(group)}</span><span>{html.escape(nights)}</span></div>'
-            f'<h3>{html.escape(destination)}</h3>'
-            f'<div class="price">{html.escape(price)}</div>'
-            f'<p><b>{html.escape(suggested_dates)}</b><br>{html.escape(why)}</p>'
-            '<div class="hotel-pick"><span>Family stay</span>'
-            f'<strong>{html.escape(hotel_name)} · {html.escape(hotel_area)}</strong>'
-            f'<small>{html.escape(hotel_fit)}</small></div>'
-            '<div class="actions">'
-            f'<a href="{url}" target="_blank" rel="noopener">Flights &rarr;</a>'
-            f'<a href="{hotel_url}" target="_blank" rel="noopener">Hotel &rarr;</a>'
-            '</div></article>'
+            f'<tr><td><span class="tag">{html.escape(group)}</span></td>'
+            f'<td class="nm">{html.escape(destination)}'
+            f'<em>{html.escape(suggested_dates)} · {html.escape(nights)}</em></td>'
+            f'<td class="now">{html.escape(price)}</td>'
+            f'<td class="nm">{html.escape(hotel_name)}<em>{html.escape(hotel_area)} · '
+            f'{html.escape(hotel_fit)}</em></td><td>{html.escape(why)}</td>'
+            f'<td class="go"><a href="{url}" target="_blank" rel="noopener">Flight &rarr;</a><br>'
+            f'<a href="{hotel_url}" target="_blank" rel="noopener">Hotel &rarr;</a></td></tr>'
         )
-    st.markdown(fares_html + '</div>', unsafe_allow_html=True)
+    st.markdown(fares_html + '</tbody></table></div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="miles-strip"><div><span>Best use of miles this month</span>'
         '<strong>30% off KrisFlyer Saver awards</strong>'
@@ -986,15 +970,15 @@ elif view == "Travel":
         style = st.selectbox("Typical travel style", ("Value-conscious", "Comfort", "Premium"))
 
     st.markdown(
-        '<div class="picks">'
-        '<div class="pick"><span>Do first</span><strong>Compare total trip cost</strong>'
-        '<p>Include baggage, seats, transport, taxes and FX fees. The cheapest headline fare often is not cheapest.</p></div>'
-        '<div class="pick"><span>Highest leverage</span><strong>Move the dates</strong>'
-        '<p>A small date shift usually beats points optimisation. Search a window before choosing exact leave dates.</p></div>'
-        '<div class="pick"><span>Avoid</span><strong>Blind loyalty</strong>'
-        '<p>Points are useful only after price, schedule and cancellation terms are competitive.</p></div>'
-        '</div>',
-        unsafe_allow_html=True,
+        '<div class="shell"><table class="t deals"><thead><tr>'
+        '<th>Priority</th><th>Action</th><th>Why</th></tr></thead><tbody>'
+        '<tr><td><span class="tag">Do first</span></td><td class="nm">Compare total trip cost</td>'
+        '<td>Include baggage, seats, transport, taxes and FX fees. The cheapest headline fare often is not cheapest.</td></tr>'
+        '<tr><td><span class="tag">Highest leverage</span></td><td class="nm">Move the dates</td>'
+        '<td>A small date shift usually beats points optimisation. Search a window before choosing exact leave dates.</td></tr>'
+        '<tr><td><span class="tag">Avoid</span></td><td class="nm">Blind loyalty</td>'
+        '<td>Points are useful only after price, schedule and cancellation terms are competitive.</td></tr>'
+        '</tbody></table></div>', unsafe_allow_html=True,
     )
 
     st.markdown('<div class="sec"><h2>Your savings levers</h2><p>Select only the changes you can sustain</p></div>', unsafe_allow_html=True)
