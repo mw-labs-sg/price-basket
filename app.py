@@ -65,12 +65,8 @@ DELIVERY = {
 # the one category that has a real price table behind it.
 SAVINGS_CATEGORIES = (
     ("Groceries", 12000, 10, "The only category with verified like-for-like prices. Savings are a real basket comparison, not an estimate."),
-    ("Dining out", 15000, 15, "Restaurants, hawker, delivery. Usually the largest recoverable pool, but nothing here is measured yet."),
-    ("Health", 8000, 10, "Insurance, medical, dental, fitness. Savings come from policy review, not daily choices."),
-    ("Travel", 15000, 8, "Large and lumpy. Savings come from timing and fare class, not loyalty."),
-    ("Culture", 4000, 15, "Entertainment, subscriptions, events. High percentage, small base."),
-    ("Education", 6000, 8, "Courses, enrichment, tuition. Priced by provider; little room to shop around."),
-    ("Parenting", 9000, 10, "Childcare, gear, activities. Gear is comparable; childcare mostly is not."),
+    ("Dining out", 15000, 15, "Restaurants, hawker, delivery. The deal finder makes this actionable; the saving rate remains your estimate."),
+    ("Travel", 15000, 8, "Large and lumpy. Use the planner below to model only the habits you can realistically sustain."),
 )
 DATA_CATEGORY = "Groceries"
 # Per-item search URLs. Sheng Siong has no public search endpoint I could
@@ -139,6 +135,17 @@ DEALS_SOURCES = (
     ("Chope bank card promos", "https://www.chope.co/singapore-restaurants/pages/bankcardspromoguide"),
 )
 
+# Travel savings are modelled as controllable levers rather than volatile
+# promo codes. The user can switch on only the habits they would genuinely use.
+# label, saving rate applied to annual travel spend, short explanation
+TRAVEL_LEVERS = (
+    ("Flexible dates", 4.0, "Compare a 3-day window and avoid peak departure times."),
+    ("Fare alerts", 2.0, "Track first, then book when the route drops below its normal range."),
+    ("No-FX-fee payment", 1.5, "Avoid the common card markup on overseas spend."),
+    ("Book direct after comparing", 1.0, "Use aggregators to compare, then check the airline or hotel directly."),
+    ("Right-size baggage", 1.5, "Price the whole trip, including bags and seats, before choosing the fare."),
+)
+
 
 def sgd(value, dp=2):
     return f"S${value:,.{dp}f}"
@@ -151,35 +158,34 @@ st.markdown("""
 /* Dark palette. Every colour is a token so the theme can be retuned in one
    place; .streamlit/config.toml carries the matching widget chrome. */
 :root{
-  /* Warm charcoal, not green-black -- the cold near-black is what made the
-     old palette feel severe. */
-  --bg:#181513; --surface:#211d1a; --raised:#2a2522; --border:#38312c;
-  --text:#f2ece6; --muted:#bcaea3; --dim:#a3958a;
-  /* Apricot is the brand + interactive colour: links, buttons, nav, headings. */
-  --accent:#f0a869; --accent-deep:#d98a48; --accent-dim:#8c5c33;
-  --soft:rgba(240,168,105,.13); --softer:rgba(240,168,105,.07);
-  /* Sage is reserved for one meaning only: money saved / cheapest option. */
-  --good:#8fce9f; --good-deep:#63ab77; --good-dim:#436f4e;
-  --good-soft:rgba(143,206,159,.14); --good-softer:rgba(143,206,159,.07);
-  --shadow:0 8px 26px rgba(0,0,0,.42);
+  /* Deep blue-charcoal keeps dense comparison data calm and legible. */
+  --bg:#090d14; --surface:#111824; --raised:#182231; --border:#263448;
+  --text:#f5f7fb; --muted:#aeb9ca; --dim:#7f8da3;
+  /* Coral adds warmth without turning the entire interface brown. */
+  --accent:#ffad7a; --accent-deep:#f18455; --accent-dim:#8e4d32;
+  --soft:rgba(255,173,122,.13); --softer:rgba(255,173,122,.07);
+  /* Mint is reserved for one meaning only: money saved / cheapest option. */
+  --good:#72dfb0; --good-deep:#40b987; --good-dim:#286e56;
+  --good-soft:rgba(114,223,176,.13); --good-softer:rgba(114,223,176,.07);
+  --shadow:0 18px 50px rgba(0,0,0,.34);
   color-scheme:dark;
 }
-.stApp{background:var(--bg);color:var(--text)}
+.stApp{background:radial-gradient(circle at 78% -10%,#182438 0,transparent 35%),var(--bg);color:var(--text)}
 html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
-.block-container{max-width:1500px;padding:1.6rem 2rem 3.5rem}
+.block-container{max-width:1400px;padding:1.8rem 2.2rem 4rem}
 #MainMenu,footer,header{visibility:hidden}
 ::selection{background:var(--accent-dim);color:#fff}
 
 .hero{align-items:center;display:flex;gap:13px;margin-bottom:15px}
-.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:13px;box-shadow:0 4px 14px rgba(240,168,105,.20);color:#06120c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
+.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:14px;box-shadow:0 8px 24px rgba(241,132,85,.25);color:#12151c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
 .hero h1{color:var(--text);font-size:30px;letter-spacing:-.9px;margin:0}
 .hero p{color:var(--muted);font-size:13px;margin:4px 0 0}
 
 /* category nav pills */
-div[data-testid="stPills"]{margin:2px 0 6px}
-div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:6px 16px!important}
+div[data-testid="stPills"]{margin:5px 0 10px}
+div[data-testid="stPills"] button{border:1px solid var(--border)!important;border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:7px 17px!important}
 
-.band{background:linear-gradient(135deg,#3a2a1e,#241b15);border:1px solid var(--border);border-radius:15px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 14px;padding:18px 21px;position:relative;overflow:hidden}
+.band{background:linear-gradient(135deg,#172335,#101824);border:1px solid #30415a;border-radius:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 16px;padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
 .band::after{background:radial-gradient(circle at 88% 12%,rgba(240,168,105,.22),transparent 62%);content:'';inset:0;position:absolute}
 .band>*{position:relative;z-index:1}
 .band span{color:var(--accent);display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
@@ -188,7 +194,7 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .band small b{color:var(--text)}
 
 .cards{display:grid;gap:13px;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));margin:0 0 14px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 16px;transition:border-color .15s,transform .15s}
+.card{background:linear-gradient(180deg,#141d2a,var(--surface));border:1px solid var(--border);border-radius:15px;padding:17px 18px;transition:border-color .15s,transform .15s;box-shadow:0 8px 24px rgba(0,0,0,.16)}
 .card:hover{border-color:var(--accent-dim);transform:translateY(-1px)}
 .card h3{color:var(--text);font-size:13.5px;font-weight:700;margin:0 0 10px}
 .card .big{color:var(--good);font-size:25px;font-weight:700;letter-spacing:-.8px}
@@ -270,6 +276,15 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .srcs a{color:var(--accent);text-decoration:none}
 .srcs a:hover{text-decoration:underline}
 .checked{background:var(--raised);border:1px solid var(--border);border-radius:9px;color:var(--muted);display:inline-block;font-size:11px;margin:0 0 11px;padding:5px 10px}
+.picks{display:grid;gap:12px;grid-template-columns:repeat(3,1fr);margin:12px 0 20px}
+.pick{background:linear-gradient(180deg,#172232,#111824);border:1px solid var(--border);border-radius:14px;padding:16px}
+.pick span{color:var(--accent);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.pick strong{color:var(--text);display:block;font-size:16px;margin:7px 0 5px}
+.pick p{color:var(--muted);font-size:11.5px;line-height:1.5;margin:0}
+.travel-result{background:linear-gradient(135deg,var(--good-soft),var(--surface));border:1px solid var(--good-dim);border-radius:15px;margin:14px 0;padding:18px 20px}
+.travel-result span{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.travel-result strong{color:var(--good);display:block;font-size:30px;letter-spacing:-1px;margin-top:4px}
+.travel-result small{color:var(--muted)}
 
 @media(max-width:760px){
   .block-container{padding:.7rem .5rem 2rem}
@@ -278,6 +293,7 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
   .band{border-radius:12px;flex-direction:column;align-items:flex-start;gap:7px;padding:14px 16px}
   .band strong{font-size:32px}.band small{text-align:left}
   .cards,.delivery,.tiles{grid-template-columns:repeat(2,1fr)}
+  .picks{grid-template-columns:1fr}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
   .t.deals{min-width:720px}
@@ -517,6 +533,17 @@ elif view == DEALS_CATEGORY:
         "expire constantly, so re-verify a row before you commit to it</div>",
         unsafe_allow_html=True,
     )
+    st.markdown(
+        '<div class="picks">'
+        '<div class="pick"><span>Best free option</span><strong>Eatigo</strong>'
+        '<p>Start here if your schedule is flexible: 10&ndash;50% off without paying for a membership.</p></div>'
+        '<div class="pick"><span>Best for regular dining</span><strong>Burpple Beyond</strong>'
+        '<p>Worth considering when you can naturally use 1-for-1 offers at least a few times a year.</p></div>'
+        '<div class="pick"><span>Best stack</span><strong>Chope + dining card</strong>'
+        '<p>Use the free booking layer, then pay with a card whose cap and minimum spend fit your actual habits.</p></div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
 
     # Where to actually eat. End dates are evaluated against today, so rows
     # age out on their own instead of quietly going stale.
@@ -630,6 +657,62 @@ elif view == DEALS_CATEGORY:
         '<div class="srcs">Sources: '
         + " &middot; ".join(f'<a href="{u}" target="_blank" rel="noopener">{html.escape(n)}</a>' for n, u in DEALS_SOURCES)
         + "</div>",
+        unsafe_allow_html=True,
+    )
+
+# -------------------------------------------------------- travel planner ----
+elif view == "Travel":
+    st.markdown(
+        '<div class="sec"><h2>Travel savings planner</h2>'
+        '<p>Build a realistic target from habits you would actually use</p></div>',
+        unsafe_allow_html=True,
+    )
+
+    trip_col, timing_col = st.columns([1, 1])
+    with trip_col:
+        trips = st.number_input("Trips per year", 1, 20, 3, 1)
+    with timing_col:
+        style = st.selectbox("Typical travel style", ("Value-conscious", "Comfort", "Premium"))
+
+    st.markdown(
+        '<div class="picks">'
+        '<div class="pick"><span>Do first</span><strong>Compare total trip cost</strong>'
+        '<p>Include baggage, seats, transport, taxes and FX fees. The cheapest headline fare often is not cheapest.</p></div>'
+        '<div class="pick"><span>Highest leverage</span><strong>Move the dates</strong>'
+        '<p>A small date shift usually beats points optimisation. Search a window before choosing exact leave dates.</p></div>'
+        '<div class="pick"><span>Avoid</span><strong>Blind loyalty</strong>'
+        '<p>Points are useful only after price, schedule and cancellation terms are competitive.</p></div>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="sec"><h2>Your savings levers</h2><p>Select only the changes you can sustain</p></div>', unsafe_allow_html=True)
+    chosen_rate = 0.0
+    for lever_index, (label, rate, explanation) in enumerate(TRAVEL_LEVERS):
+        enabled = st.checkbox(
+            f"{label} · about {rate:g}%",
+            value=lever_index in (0, 1, 2),
+            help=explanation,
+            key=f"travel_lever_{lever_index}",
+        )
+        if enabled:
+            chosen_rate += rate
+
+    style_factor = {"Value-conscious": 1.0, "Comfort": 0.85, "Premium": 0.7}[style]
+    modelled_rate = min(chosen_rate * style_factor, 15)
+    modelled_saving = active["spend"] * modelled_rate / 100
+    per_trip = modelled_saving / trips
+    st.markdown(
+        f'<div class="travel-result"><span>Modelled annual opportunity</span>'
+        f'<strong>{sgd(modelled_saving, 0)}</strong>'
+        f'<small>{modelled_rate:.1f}% of travel spend &middot; about {sgd(per_trip, 0)} per trip</small></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f'<div class="note"><b>Reality check:</b> your headline assumption is '
+        f'{active["pct"]}% ({sgd(active["saving"], 0)} per year). The habits selected above model '
+        f'{modelled_rate:.1f}% ({sgd(modelled_saving, 0)}). Use the lower figure for planning; '
+        'it is better to capture a modest target consistently than count sale prices you would not actually book.</div>',
         unsafe_allow_html=True,
     )
 
