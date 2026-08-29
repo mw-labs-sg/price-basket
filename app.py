@@ -145,6 +145,17 @@ TRAVEL_LEVERS = (
     ("Book direct after comparing", 1.0, "Use aggregators to compare, then check the airline or hotel directly."),
     ("Right-size baggage", 1.5, "Price the whole trip, including bags and seats, before choosing the fare."),
 )
+TRAVEL_DEALS_CHECKED = "29 Aug 2026"
+# region, carrier, destination, price, fare type, note, booking deadline, url
+TRAVEL_FARES = (
+    ("Nearby", "Scoot", "Penang", "S$159", "Return economy", "24–28 Sep 2026 fare snapshot", None, "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Nearby", "Singapore Airlines", "Kuala Lumpur", "S$158", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Nearby", "Singapore Airlines", "Bali", "S$298", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Asia", "Scoot", "Bangkok", "S$213", "Return economy", "20 Sep–21 Nov 2026 fare snapshot", None, "https://www.flyscoot.com/flights/en/flights-from-singapore"),
+    ("Asia", "Singapore Airlines", "Hong Kong", "S$358", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Long haul", "Singapore Airlines", "Sydney", "S$588", "Return economy", "Selected travel dates through Jul 2027", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+    ("Long haul", "Singapore Airlines", "Amsterdam", "S$998", "Return economy", "Selected outbound periods", "10 Sep 2026", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
+)
 
 # Home-screen offers, verified against the linked publisher pages. Keep this
 # intentionally small: it is a useful editorial shortlist, not a deal dump.
@@ -314,6 +325,20 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
 .flash a{align-items:center;border-top:1px solid var(--border);color:var(--accent);display:flex;font-size:11px;font-weight:700;justify-content:space-between;margin-top:auto;padding-top:11px;text-decoration:none}
 .flash a:hover{color:#ffc39d}
 .home-note{color:var(--dim);font-size:10.5px;line-height:1.6;margin:5px 1px}
+.fare-grid{display:grid;gap:11px;grid-template-columns:repeat(3,1fr);margin:10px 0 15px}
+.fare{background:var(--surface);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column;padding:15px}
+.fare .route{align-items:flex-start;display:flex;gap:8px;justify-content:space-between}
+.fare .route span{color:var(--dim);font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.fare h3{color:var(--text);font-size:16px;margin:10px 0 4px}
+.fare .price{color:var(--good);font-size:22px;font-weight:700;letter-spacing:-.5px}
+.fare p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:5px 0 13px}
+.fare a{color:var(--accent);font-size:11px;font-weight:700;margin-top:auto;text-decoration:none}
+.fare a:hover{text-decoration:underline}
+.miles-strip{align-items:center;background:linear-gradient(135deg,#17283a,#111824);border:1px solid #31526a;border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
+.miles-strip span{color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.miles-strip strong{color:var(--text);display:block;font-size:17px;margin:4px 0}
+.miles-strip small{color:var(--muted);font-size:10.5px}
+.miles-strip a{background:var(--soft);border:1px solid var(--accent-dim);border-radius:8px;color:var(--accent);font-size:11px;font-weight:700;padding:8px 11px;text-decoration:none;white-space:nowrap}
 
 @media(max-width:760px){
   .block-container{padding:.7rem .5rem 2rem}
@@ -324,6 +349,7 @@ div[data-testid="stPills"] button{border:1px solid var(--border)!important;borde
   .cards,.delivery,.tiles{grid-template-columns:repeat(2,1fr)}
   .picks{grid-template-columns:1fr}
   .flash-grid{grid-template-columns:1fr}.flash{min-height:190px}
+  .fare-grid{grid-template-columns:1fr}.miles-strip{align-items:flex-start;flex-direction:column}
   .deal-head{align-items:flex-start;flex-direction:column;gap:5px}.deal-head h2{font-size:21px}
   .sec{margin:20px 0 9px}.sec h2{font-size:17px}
   .t{font-size:12px;min-width:640px}
@@ -712,8 +738,52 @@ elif view == DEALS_CATEGORY:
 # -------------------------------------------------------- travel planner ----
 elif view == "Travel":
     st.markdown(
+        '<div class="sec"><h2>Current fares from Singapore</h2>'
+        f'<p>Checked {TRAVEL_DEALS_CHECKED} · indicative prices, cheapest first</p></div>',
+        unsafe_allow_html=True,
+    )
+
+    travel_region = st.segmented_control(
+        "Region", ("All", "Nearby", "Asia", "Long haul"), default="All",
+        label_visibility="collapsed", key="travel_region",
+    ) if hasattr(st, "segmented_control") else st.radio(
+        "Region", ("All", "Nearby", "Asia", "Long haul"), horizontal=True,
+        label_visibility="collapsed", key="travel_region",
+    )
+    travel_region = travel_region or "All"
+    matching_fares = [f for f in TRAVEL_FARES if travel_region == "All" or f[0] == travel_region]
+    matching_fares.sort(key=lambda f: float(re.sub(r"[^0-9.]", "", f[3])))
+    fares_html = '<div class="fare-grid">'
+    for region, carrier, destination, price, fare_type, note, deadline, url in matching_fares:
+        deadline_text = f"Book by {deadline}" if deadline else "Fare snapshot"
+        fares_html += (
+            '<article class="fare"><div class="route">'
+            f'<span>{html.escape(carrier)}</span><span>{html.escape(deadline_text)}</span></div>'
+            f'<h3>Singapore &rarr; {html.escape(destination)}</h3>'
+            f'<div class="price">From {html.escape(price)}</div>'
+            f'<p>{html.escape(fare_type)} · {html.escape(note)}</p>'
+            f'<a href="{url}" target="_blank" rel="noopener">Check live fare &rarr;</a></article>'
+        )
+    st.markdown(fares_html + '</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="miles-strip"><div><span>Best use of miles right now</span>'
+        '<strong>30% off KrisFlyer Saver awards</strong>'
+        '<small>Examples from Singapore: Kuala Lumpur or Penang from 5,600 miles; '
+        'Bangkok or Phuket from 9,100 miles one-way. Book by 31 Aug for September travel.</small></div>'
+        '<a href="https://www.singaporeair.com/en_UK/sg/plan-travel/promotions/global/kf/kf-promo/kfescapes/" '
+        'target="_blank" rel="noopener">View award list &rarr;</a></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="note"><b>Before booking:</b> Singapore Airlines sale fares include taxes and surcharges; '
+        'Scoot snapshots may add optional bags, seats and meals. Availability is checked again when you click through, '
+        'so compare the final checkout total rather than the headline fare.</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
         '<div class="sec"><h2>Travel savings planner</h2>'
-        '<p>Build a realistic target from habits you would actually use</p></div>',
+        '<p>Build a realistic annual target from habits you would actually use</p></div>',
         unsafe_allow_html=True,
     )
 
