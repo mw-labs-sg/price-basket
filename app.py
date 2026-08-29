@@ -107,39 +107,45 @@ DINING_CARDS = (
     ("POSB Everyday", "5%", "S$800", "S$20", 240),
 )
 UOB_VI_PERKS = (
-    ("Miles", "1.4 mpd local · 2.4 mpd overseas", "No miles-conversion fee. Selected transaction categories are excluded."),
-    ("Renewal", "25,000 miles + up to 15,000 bonus", "25,000 after paying the annual fee; another 15,000 after S$100,000 qualifying annual spend."),
-    ("Airport", "12 lounge passes per membership year", "DragonPass access at 1,400+ lounges; passes can be shared with accompanying guests."),
-    ("Insurance", "Up to US$1m travel accident cover", "Charge the full travel fare to the card; also includes specified inconvenience and purchase-protection cover."),
-    ("Hotels", "IHG 20% off · Agoda stay 3 pay 2", "Participating properties and booking windows only; Agoda discount is capped at US$150 per transaction."),
-    ("Dining", "Up to 30% off restaurants", "Plus up to 25% off participating airport restaurants through DragonPass."),
-    ("Concierge", "24/7 Visa Infinite concierge", "Dining, travel and lifestyle assistance: 1800 253 2288 or +65 6253 2288 overseas."),
-    ("Golf", "Complimentary weekday green fees", "Participating regional courses; advance booking and individual course terms apply."),
-    ("Assistance", "Home, vehicle, travel and medical help", "Home assistance up to S$100 per visit, twice yearly; separate limits and terms apply."),
-    ("Fee", "S$654 yearly · non-waivable", "First supplementary card is free for life; later supplementary cards are chargeable."),
+    ("Everyday miles", "1.4 mpd local · 2.4 mpd overseas", "Pay directly with the card; miles-conversion fees are waived.", "Use overseas where 2.4 mpd beats your other cards; avoid excluded MCCs and AMAZE* transactions."),
+    ("KrisFlyer UOB Account", "Up to 6 bonus mpd with salary crediting", "Credit at least S$1,600 salary monthly and keep an eligible deposit balance.", "Use only if the deposit balance and foregone bank interest make the extra miles worthwhile."),
+    ("Renewal miles", "25,000 miles + 15,000 spend bonus", "Pay the S$654 annual fee in full; spend S$100,000 qualifying spend in the membership year for the extra 15,000.", "Value the 25,000 miles before renewing; do not overspend merely to reach the S$100,000 tier."),
+    ("Airport lounges", "12 DragonPass visits per membership year", "Register the card in the Airport Companion app; each guest uses one pass and the principal cardholder must be present.", "Reserve passes for longer layovers or airports where food and seating would otherwise cost more; extra visits are US$32."),
+    ("Airport extras", "Up to 25% dining · 5% limo/Meet & Greet", "Book or redeem participating services through Airport Companion by DragonPass.", "Check the app before every flight and compare the discounted price with direct booking."),
+    ("Travel insurance", "Up to US$1m personal accident cover", "Charge the full travel fare to the card; cover includes specified delays, baggage, missed connections and up to S$10,000 purchase protection.", "Use for full-fare bookings, then download the policy and confirm whether your trip activities and family members are covered."),
+    ("Luxury Hotel Programme", "Amenities at 16 premium hotel programmes", "Ask UOB Travel Concierge to book an eligible property; benefits vary by hotel and availability.", "Request a written comparison against the cheapest public rate, including breakfast, upgrade and late-checkout value."),
+    ("IHG hotel offer", "At least 20% off Best Flexible Rate", "Join IHG One Rewards and book an eligible Thu–Sun stay at least 7 days ahead, by 31 Dec 2026.", "Best for flexible-rate stays; compare with prepaid and member rates because the headline discount is not always cheapest."),
+    ("Agoda hotel offer", "Stay 3 nights, pay 2", "Enter through the eligible Visa Infinite Agoda offer and pay with this card; participating stays run through 31 Dec 2027.", "Use on an exactly three-night stay and compare the final total with direct hotel rates and other Agoda coupons."),
+    ("Dining privileges", "Up to 25% off current listed restaurants", "Reserve first, quote the UOB Visa Infinite Metal offer and pay the full bill with the card.", "Prioritise the 25% venues, avoid blackout dates and do not expect the discount to stack with set menus or vouchers."),
+    ("Concierge", "24/7 dining and lifestyle assistance", "Call 1800 253 2288 locally or +65 6253 2288 overseas.", "Use it for hard-to-book restaurants and card-benefit checks; ask the concierge to confirm the terms in writing."),
+    ("Travel Concierge", "Itineraries, bookings and hotel privileges", "Call +65 6302 5503 or email Travel.Concierge@UOBGroup.com for eligible arrangements.", "Use it mainly when concierge-only hotel amenities outweigh any difference from booking directly."),
+    ("Golf", "Up to 4 complimentary weekday green-fee bookings", "Book 5 working days ahead, no more than 14 days out; maximum one per month and one active booking, with a paying guest required.", "Book early in the month; compare buggy, caddie, insurance and guest charges before choosing a course."),
+    ("Emergency assistance", "Home, vehicle, travel and medical support", "Call the Visa Infinite Concierge; home repairs cover up to S$100 per visit twice yearly, and vehicle help is available twice yearly.", "Save the hotline now and use home assistance for eligible urgent electrical, plumbing or locksmith call-outs."),
+    ("Shopping privileges", "Bicester, Printemps Paris and El Corte Inglés benefits", "Arrange eligible services through UOB Travel Concierge and pay with the card; individual merchant terms apply.", "Use only on a planned trip and compare tax refunds and store prices after currency conversion."),
+    ("Annual fee", "S$654 · strictly non-waivable", "First supplementary card is free for life; later cards cost S$293.38 yearly.", "Review annual miles, lounge visits, hotel savings and dining savings before each renewal; cancel if their real value is below S$654."),
 )
 UOB_VI_DINING = (
-    ("Mosella", "Pan Pacific Orchard", "20% off à la carte menu", "30 Dec 2026"),
-    ("Portman's Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
-    ("Peppermint", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
-    ("Skyline Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026"),
-    ("Ginger", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026"),
-    ("Club 5", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026"),
-    ("Lime", "PARKROYAL COLLECTION Pickering", "20% off à la carte menu", "30 Dec 2026"),
-    ("Pete's Place", "Grand Hyatt Singapore", "15% off food bill", "30 Dec 2026"),
-    ("10|Scotts", "Grand Hyatt Singapore", "15% off afternoon tea or food/bites menu", "30 Dec 2026"),
-    ("Hai Tien Lo", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
-    ("Edge", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
-    ("Keyaki", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026"),
-    ("Peach Blossoms", "PARKROYAL COLLECTION Marina Bay", "15% off à la carte menu", "30 Dec 2026"),
-    ("Li Bai Cantonese Restaurant", "Sheraton Towers Singapore", "15% off total bill", "30 Dec 2026"),
-    ("The Dining Room", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026"),
-    ("Lobby Bar", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026"),
-    ("Nobu Singapore", "Four Seasons Hotel Singapore", "Complimentary welcome drink per person", "See UOB terms"),
-    ("Capasso", "Telok Ayer", "15% off à la carte food + aperitif", "31 Dec 2026"),
-    ("NOX – Dine in the Dark", "Club Street", "Cocktail per diner or Prosecco with 4 prix fixe menus", "30 Dec 2026"),
-    ("Sapoto", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027"),
-    ("Sushi Yujo", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027"),
+    ("Mosella", "Pan Pacific Orchard", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Portman's Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Peppermint", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Skyline Bar", "PARKROYAL COLLECTION Marina Bay", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Ginger", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Club 5", "PARKROYAL on Beach Road", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Lime", "PARKROYAL COLLECTION Pickering", "20% off à la carte menu", "30 Dec 2026", 20),
+    ("Pete's Place", "Grand Hyatt Singapore", "15% off food bill", "30 Dec 2026", 15),
+    ("10|Scotts", "Grand Hyatt Singapore", "15% off afternoon tea or food/bites menu", "30 Dec 2026", 15),
+    ("Hai Tien Lo", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026", 15),
+    ("Edge", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026", 15),
+    ("Keyaki", "Pan Pacific Singapore", "15% off à la carte menu", "30 Dec 2026", 15),
+    ("Peach Blossoms", "PARKROYAL COLLECTION Marina Bay", "15% off à la carte menu", "30 Dec 2026", 15),
+    ("Li Bai Cantonese Restaurant", "Sheraton Towers Singapore", "15% off total bill", "30 Dec 2026", 15),
+    ("The Dining Room", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026", 25),
+    ("Lobby Bar", "Sheraton Towers Singapore", "25% off total bill", "30 Dec 2026", 25),
+    ("Nobu Singapore", "Four Seasons Hotel Singapore", "Complimentary welcome drink per person", "See UOB terms", None),
+    ("Capasso", "Telok Ayer", "15% off à la carte food + aperitif", "31 Dec 2026", 15),
+    ("NOX – Dine in the Dark", "Club Street", "Cocktail per diner or Prosecco with 4 prix fixe menus", "30 Dec 2026", None),
+    ("Sapoto", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027", None),
+    ("Sushi Yujo", "Amoy Street", "Complimentary 300ml house-pour carafe", "31 Dec 2027", None),
 )
 # Specific restaurants, cross-checked across two independent guides on the
 # date above. name, venue, cuisine/what, was ++, now ++, cards, ends
@@ -707,33 +713,45 @@ elif view == DEALS_CATEGORY:
             unsafe_allow_html=True,
         )
         perks_html = ('<div class="shell"><table class="t deals"><thead><tr>'
-                      '<th>Benefit</th><th>What you get</th><th>Important detail</th>'
+                      '<th>Perk</th><th>What you get</th><th>How to use it</th>'
+                      '<th>How to maximise it</th>'
                       '</tr></thead><tbody>')
-        for label, value, detail in UOB_VI_PERKS:
+        for label, value, how_to_use, maximise in UOB_VI_PERKS:
             perks_html += (
                 f'<tr><td class="nm">{html.escape(label)}</td>'
-                f'<td class="now">{html.escape(value)}</td><td>{html.escape(detail)}</td></tr>'
+                f'<td class="now">{html.escape(value)}</td>'
+                f'<td>{html.escape(how_to_use)}</td><td>{html.escape(maximise)}</td></tr>'
             )
         st.markdown(perks_html + '</tbody></table></div>', unsafe_allow_html=True)
         st.markdown(
             '<div class="sec"><h2>Published dining privileges</h2>'
-            '<p>Use the card to pay and quote the offer when reserving</p></div>',
+            '<p>Estimated bill uses a S$200 eligible food order for two, then adds about 19.9% service and GST</p></div>',
             unsafe_allow_html=True,
         )
         uob_table = ('<div class="shell"><table class="t deals"><thead><tr>'
-                     '<th>Restaurant</th><th>Location</th><th>Benefit</th><th>Valid until</th><th></th>'
+                     '<th>Restaurant</th><th>Location</th><th>Benefit</th>'
+                     '<th>Estimated bill for 2</th><th>Valid until</th><th></th>'
                      '</tr></thead><tbody>')
         uob_url = "https://www.uob.com.sg/personal/cards/privilege/visa-infinite-metal-card.page"
-        for venue, location, benefit, validity in UOB_VI_DINING:
+        sample_food_bill = 200
+        bill_multiplier = 1.199
+        for venue, location, benefit, validity, discount_pct in UOB_VI_DINING:
+            if discount_pct is None:
+                estimated_bill = f"≈{sgd(sample_food_bill * bill_multiplier, 0)} incl. ++ + complimentary perk"
+            else:
+                estimated_bill = sgd(sample_food_bill * (1 - discount_pct / 100) * bill_multiplier, 0) + " incl. ++"
             uob_table += (
                 f'<tr><td class="nm">{html.escape(venue)}</td>'
                 f'<td>{html.escape(location)}</td><td class="now">{html.escape(benefit)}</td>'
-                f'<td>{html.escape(validity)}</td>'
+                f'<td class="cost">{html.escape(estimated_bill)}</td><td>{html.escape(validity)}</td>'
                 f'<td class="go"><a href="{uob_url}" target="_blank" rel="noopener">UOB terms &rarr;</a></td></tr>'
             )
         st.markdown(uob_table + '</tbody></table></div>', unsafe_allow_html=True)
         st.markdown(
-            '<div class="note"><b>Worth remembering:</b> the S$654 annual fee is non-waivable. '
+            '<div class="note"><b>Bill estimate:</b> it is an illustration, not a menu quote. '
+            'It assumes S$200 of discount-eligible food for two before service and GST; alcohol, set menus, '
+            'blackout dates and merchant exclusions can change the result. Complimentary-item offers leave '
+            'the estimated cash bill unchanged. <b>Worth remembering:</b> the S$654 annual fee is non-waivable. '
             'The card returns 25,000 renewal miles after the fee is paid, with another 15,000 miles '
             'after S$100,000 qualifying annual spend. Airport lounge access changed to 12 passes per '
             'membership year from 1 June 2026.</div>',
