@@ -82,6 +82,41 @@ LINK_TEMPLATES = {
 
 BASKET_ANNUAL = sum(max(0, r[5] - r[8]) * 52 for r in ITEMS)
 
+# ---------------------------------------------------------- dining deals ----
+# Hand-checked against published sources on the date below. Dining promos
+# expire constantly -- re-check before relying on any single row. Anything
+# found with an end date already past was left out (e.g. the DBS/POSB/Maybank/
+# OCBC weekend 1-for-1, which ran only to 30 Jun 2026).
+DEALS_CATEGORY = "Dining out"
+DEALS_CHECKED = "29 Aug 2026"
+# name, cost, what you get, coverage, best for, url
+DINING_PROGRAMMES = (
+    ("Burpple Beyond Lite", "S$49/yr", "1-for-1 on mains, limited redemptions", "500+ restaurants", "Breaks even in 1-2 uses", "https://www.burpple.com/beyond"),
+    ("Burpple Beyond Standard", "S$69/yr", "1-for-1 on mains, more redemptions", "500+ restaurants", "Regular casual dining", "https://www.burpple.com/beyond"),
+    ("Burpple Beyond Gold", "S$99/yr", "1-for-1, unlimited per merchant", "500+ restaurants", "Best tier if you dine out weekly", "https://www.burpple.com/beyond"),
+    ("The Entertainer", "S$80/yr", "1-for-1 dining, spa, attractions", "2,000+ offers", "Hotel dining; one dinner repays it", "https://www.theentertainerme.com/"),
+    ("Chope", "Free", "1 Chope-Dollar per S$1; deals to 50% off", "4,000+ restaurants", "Free layer, stacks on everything", "https://www.chope.co/singapore-restaurants"),
+    ("Eatigo", "Free", "10-50% off, priced by time slot", "600+ restaurants", "Off-peak flexibility", "https://eatigo.com/sg/singapore/en"),
+    ("ShopBack Dine-In", "Free", "5-15% cashback on a linked card", "2,000+ outlets", "Stacks on top of card rebate", "https://www.shopback.sg/guide/how-to/earn-cashback-in-store"),
+    ("Fave", "Free", "Prepaid vouchers, up to 20% back", "Chains and local brands", "Places you go repeatedly", "https://myfave.com/"),
+)
+# card, dining rate, min monthly spend, monthly cap, implied annual ceiling
+DINING_CARDS = (
+    ("BOC NVMO", "10%", "S$800", "S$25", 300),
+    ("Citi Cash Back", "6%", "S$800", "S$80", 960),
+    ("Maybank Family & Friends", "6-8%", "S$800-1,600", "S$20-30", 360),
+    ("HSBC Live+", "5% (8% new)", "S$600", "S$250/quarter", 1000),
+    ("Maybank XL Cashback", "5%", "S$500", "S$80", 960),
+    ("OCBC 365", "5%", "S$800-1,600", "S$80-160", 1920),
+    ("POSB Everyday", "5%", "S$800", "S$20", 240),
+)
+DEALS_SOURCES = (
+    ("Dining apps compared", "https://divedeals.sg/blog/best-dining-deals-app-singapore"),
+    ("Cashback cards for dining", "https://sethisfy.com/great-cards-for-good-food/"),
+    ("MoneySmart dining cards", "https://www.moneysmart.sg/credit-cards/dining"),
+    ("Chope bank card promos", "https://www.chope.co/singapore-restaurants/pages/bankcardspromoguide"),
+)
+
 
 def sgd(value, dp=2):
     return f"S${value:,.{dp}f}"
@@ -165,6 +200,20 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .sv{background:#f7fbf9;color:#176b49;font-weight:700;text-align:right;white-space:nowrap}
 .sv.zero{color:#c2c9c5;font-weight:400}
 .note{color:#75817b;font-size:12px;line-height:1.6;margin:10px 2px}
+.t.deals{min-width:820px}
+.t.deals thead th{text-align:left}
+.t.deals td{text-align:left;white-space:normal}
+.t.deals td.nm{background:#fff;font-weight:600;left:0;min-width:165px;position:sticky;z-index:2}
+.t.deals td.cost{font-weight:700;white-space:nowrap}
+.t.deals td.cost.free{color:#176b49}
+.t.deals td.go{white-space:nowrap}
+.t.deals td.go a{background:#eaf6ef;border-radius:6px;color:#176b49;font-weight:700;padding:5px 10px;text-decoration:none}
+.t.deals td.go a:hover{background:#d8ecdf}
+.t.deals td.num{text-align:right;white-space:nowrap}
+.srcs{color:#8a948e;font-size:11.5px;margin:10px 2px}
+.srcs a{color:#27835d;text-decoration:none}
+.srcs a:hover{text-decoration:underline}
+.checked{background:#eef3f0;border-radius:9px;color:#56645d;display:inline-block;font-size:11px;margin:0 0 10px;padding:4px 9px}
 .swipe-note{color:#8a948e;display:none;font-size:11px;margin:6px 2px;text-align:right}
 .empty{background:#fff;border:1px dashed #dfe7e2;border-radius:12px;color:#8a948e;font-size:13px;line-height:1.6;padding:22px}
 .empty b{color:#203128;display:block;font-size:14px;margin-bottom:5px}
@@ -400,6 +449,75 @@ if view == DATA_CATEGORY:
             "recorded and carry no capture date.</div>",
             unsafe_allow_html=True,
         )
+
+# ----------------------------------------------------- dining out deals ----
+elif view == DEALS_CATEGORY:
+    st.markdown(
+        '<div class="sec"><h2>Current dining deals</h2>'
+        "<p>Subscription programmes and cashback cards available now</p></div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f'<div class="checked">Checked {DEALS_CHECKED} &middot; dining promos '
+        "expire constantly, so re-verify a row before you commit to it</div>",
+        unsafe_allow_html=True,
+    )
+
+    prog = ('<div class="shell"><table class="t deals"><thead><tr>'
+            "<th>Programme</th><th>Cost</th><th>What you get</th>"
+            "<th>Coverage</th><th>Best for</th><th></th></tr></thead><tbody>")
+    for name, cost, deal, coverage, best_for, url in DINING_PROGRAMMES:
+        free = " free" if cost == "Free" else ""
+        prog += (
+            f'<tr><td class="nm">{html.escape(name)}</td>'
+            f'<td class="cost{free}">{html.escape(cost)}</td>'
+            f"<td>{html.escape(deal)}</td><td>{html.escape(coverage)}</td>"
+            f"<td>{html.escape(best_for)}</td>"
+            f'<td class="go"><a href="{url}" target="_blank" rel="noopener">Open &rarr;</a></td></tr>'
+        )
+    st.markdown(prog + "</tbody></table></div>", unsafe_allow_html=True)
+
+    st.markdown(
+        '<div class="sec"><h2>Dining cashback cards</h2>'
+        "<p>Rebate is capped monthly, so a higher rate is not always more money</p></div>",
+        unsafe_allow_html=True,
+    )
+    cards_tbl = ('<div class="shell"><table class="t deals"><thead><tr>'
+                 "<th>Card</th><th>Dining rate</th><th>Min spend / month</th>"
+                 "<th>Cashback cap</th><th>Ceiling / year</th><th></th></tr></thead><tbody>")
+    for name, rate, min_spend, cap, ceiling in DINING_CARDS:
+        url = "https://www.google.com/search?q=" + quote_plus(f"{name} credit card singapore dining")
+        cards_tbl += (
+            f'<tr><td class="nm">{html.escape(name)}</td>'
+            f'<td class="cost">{html.escape(rate)}</td>'
+            f"<td>{html.escape(min_spend)}</td><td>{html.escape(cap)}</td>"
+            f'<td class="num">{sgd(ceiling, 0)}</td>'
+            f'<td class="go"><a href="{url}" target="_blank" rel="noopener">Look up &rarr;</a></td></tr>'
+        )
+    st.markdown(cards_tbl + "</tbody></table></div>", unsafe_allow_html=True)
+
+    # Reality-check the assumption against what the deals can actually return.
+    CARD_RATE, CARD_CAP_MONTH, PER_REDEMPTION = 0.06, 80, 20
+    card_value = min(active["spend"] * CARD_RATE, CARD_CAP_MONTH * 12)
+    gap = max(0, active["saving"] - card_value)
+    per_month = gap / PER_REDEMPTION / 12
+    st.markdown(
+        f'<div class="note"><b>Does your {active["pct"]}% assumption hold?</b> '
+        f'A representative 6% dining card on {sgd(active["spend"], 0)} of dining '
+        f"returns about {sgd(card_value, 0)} a year before the monthly cap bites. "
+        f'Your assumption implies {sgd(active["saving"], 0)}, leaving {sgd(gap, 0)} '
+        f"that has to come from 1-for-1 redemptions &mdash; roughly "
+        f"<b>{per_month:.0f} redemptions a month</b> at S${PER_REDEMPTION} saved each. "
+        "If that sounds like more eating out than you actually do, the rate is too "
+        "high rather than the deals being bad.</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div class="srcs">Sources: '
+        + " &middot; ".join(f'<a href="{u}" target="_blank" rel="noopener">{html.escape(n)}</a>' for n, u in DEALS_SOURCES)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
 
 # ------------------------------------------------- categories without data ----
 # Overview deliberately falls through with nothing extra -- it stays a clean
