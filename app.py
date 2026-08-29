@@ -164,6 +164,20 @@ TRIP_IDEAS = (
     ("Regional", "Bali", "From S$298", "4–10 Sep", "21–27 Nov", "6 nights", "Works best with one resort base; September is typically the stronger window.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
     ("Regional", "Hanoi", "From S$328", "4–10 Sep", "28 Nov–4 Dec", "6 nights", "Pair the city with Ninh Binh for a compact culture-and-nature trip.", "https://www.singaporeair.com/en_UK/sg/plan-travel/local-promotions/offers/"),
 )
+# destination: hotel, area, family fit, official page
+HOTEL_IDEAS = {
+    "Perth": ("Holiday Inn Perth City Centre", "Perth CBD", "King + two singles in a separate family sleeping area; kids stay and eat free terms apply.", "https://perth.holidayinn.com/stay/family-room/"),
+    "Sydney": ("Sofitel Sydney Wentworth", "Sydney CBD", "Connecting rooms, children’s welcome kit and free breakfast for under-12s.", "https://sofitel.accor.com/en/hotels/3665/Family.html"),
+    "Melbourne": ("Quay West Suites Melbourne", "Southbank", "Apartment-style stay with extra living space and a kitchen for longer family trips.", "https://all.accor.com/a/en/experiences/melbourne-family-hotels.html"),
+    "Auckland + Rotorua": ("The Sebel Quay West Auckland", "Auckland CBD", "One- to three-bedroom apartments near the harbour; two-bedroom units sleep up to five.", "https://all.accor.com/hotel/8802/index.en.shtml"),
+    "Osaka + Kyoto": ("MIMARU Osaka Namba Station", "Namba", "Family apartments with kitchens; two-bedroom options keep longer stays manageable.", "https://mimaruhotels.com/en/"),
+    "Tokyo": ("MIMARU Tokyo Station East", "Hatchobori", "One- and two-bedroom family apartments, including bunk-bed layouts and kitchens.", "https://mimaruhotels.com/en/hotel/tokyo-station-east/"),
+    "Hokkaido": ("Hotel Keihan Sapporo", "Sapporo Station", "Connecting rooms sleep four to six with five or six separate beds.", "https://sapporo.hotelkeihan.co.jp/rooms/connecting-room-non-smoking/"),
+    "Penang": ("Sunway Hotel Georgetown", "George Town", "Family room with one king and one single; accommodates two adults and two young children.", "https://www.sunwayhotels.com/sunway-georgetown/rooms-suites/family-room"),
+    "Bangkok": ("Courtyard by Marriott Bangkok", "Ratchaprasong", "Family room for four with two double beds, a bathtub and connecting-room options.", "https://www.marriott.com/en-us/hotels/bkkcy-courtyard-bangkok/rooms/premium-rooms/"),
+    "Bali": ("Courtyard Bali Nusa Dua Resort", "Nusa Dua", "Resort rooms and spacious suites around a lagoon pool, suited to a one-base family holiday.", "https://www.marriott.com/en-us/hotels/dpscy-courtyard-bali-nusa-dua-resort/rooms/"),
+    "Hanoi": ("Hanoi Harmonia Hotel", "Old Quarter", "Family room with two king beds for up to four adults and one child.", "https://hanoiharmoniahotel.com/rooms-rates/family-room"),
+}
 
 # Home-screen offers, verified against the linked publisher pages. Keep this
 # intentionally small: it is a useful editorial shortlist, not a deal dump.
@@ -342,6 +356,12 @@ div[data-testid="stWidgetLabel"] p{color:var(--muted)!important}
 .fare p{color:var(--muted);font-size:10.5px;line-height:1.5;margin:5px 0 13px}
 .fare a{color:var(--accent);font-size:11px;font-weight:700;margin-top:auto;text-decoration:none}
 .fare a:hover{text-decoration:underline}
+.hotel-pick{background:var(--raised);border:1px solid var(--border);border-radius:10px;margin:2px 0 13px;padding:10px 11px}
+.hotel-pick span{color:var(--dim);font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.hotel-pick strong{color:var(--text);display:block;font-size:12px;margin:4px 0 3px}
+.hotel-pick small{color:var(--muted);display:block;font-size:9.5px;line-height:1.45}
+.fare .actions{display:flex;gap:12px;margin-top:auto}
+.fare .actions a{margin-top:0}
 .miles-strip{align-items:center;background:linear-gradient(135deg,var(--miles-a),var(--miles-b));border:1px solid var(--miles-border);border-radius:15px;display:flex;gap:18px;justify-content:space-between;margin:13px 0 18px;padding:17px 19px}
 .miles-strip span{color:var(--accent);font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .miles-strip strong{color:var(--text);display:block;font-size:17px;margin:4px 0}
@@ -806,13 +826,20 @@ elif view == "Travel":
     fares_html = '<div class="fare-grid">'
     for group, destination, price, sep_dates, year_end_dates, nights, why, url in matching_fares:
         suggested_dates = sep_dates if date_index == 3 else year_end_dates
+        hotel_name, hotel_area, hotel_fit, hotel_url = HOTEL_IDEAS[destination]
         fares_html += (
             '<article class="fare"><div class="route">'
             f'<span>{html.escape(group)}</span><span>{html.escape(nights)}</span></div>'
             f'<h3>{html.escape(destination)}</h3>'
             f'<div class="price">{html.escape(price)}</div>'
             f'<p><b>{html.escape(suggested_dates)}</b><br>{html.escape(why)}</p>'
-            f'<a href="{url}" target="_blank" rel="noopener">Check flights &rarr;</a></article>'
+            '<div class="hotel-pick"><span>Family stay</span>'
+            f'<strong>{html.escape(hotel_name)} · {html.escape(hotel_area)}</strong>'
+            f'<small>{html.escape(hotel_fit)}</small></div>'
+            '<div class="actions">'
+            f'<a href="{url}" target="_blank" rel="noopener">Flights &rarr;</a>'
+            f'<a href="{hotel_url}" target="_blank" rel="noopener">Hotel &rarr;</a>'
+            '</div></article>'
         )
     st.markdown(fares_html + '</div>', unsafe_allow_html=True)
     st.markdown(
@@ -827,7 +854,8 @@ elif view == "Travel":
     st.markdown(
         f'<div class="note"><b>Fare check:</b> Prices were checked {TRAVEL_DEALS_CHECKED}. '
         'The dates are family-friendly suggestions inside the MOE holiday, not a guarantee that the headline fare '
-        'is available on those exact days. Compare the final total including bags, seats and meals.</div>',
+        'is available on those exact days. Hotel picks link to official room pages; confirm occupancy for your '
+        'children’s ages before paying. Compare the final total including bags, seats, meals and local taxes.</div>',
         unsafe_allow_html=True,
     )
 
