@@ -151,11 +151,17 @@ st.markdown("""
 /* Dark palette. Every colour is a token so the theme can be retuned in one
    place; .streamlit/config.toml carries the matching widget chrome. */
 :root{
-  --bg:#0e1412; --surface:#161e1a; --raised:#1c2621; --border:#26332d;
-  --text:#e7ede9; --muted:#9db0a7; --dim:#8b9c94;
-  --accent:#3fbe83; --accent-deep:#2a9c68; --accent-dim:#1f6f4b;
-  --soft:rgba(63,190,131,.13); --softer:rgba(63,190,131,.07);
-  --shadow:0 8px 26px rgba(0,0,0,.36);
+  /* Warm charcoal, not green-black -- the cold near-black is what made the
+     old palette feel severe. */
+  --bg:#181513; --surface:#211d1a; --raised:#2a2522; --border:#38312c;
+  --text:#f2ece6; --muted:#bcaea3; --dim:#a3958a;
+  /* Apricot is the brand + interactive colour: links, buttons, nav, headings. */
+  --accent:#f0a869; --accent-deep:#d98a48; --accent-dim:#8c5c33;
+  --soft:rgba(240,168,105,.13); --softer:rgba(240,168,105,.07);
+  /* Sage is reserved for one meaning only: money saved / cheapest option. */
+  --good:#8fce9f; --good-deep:#63ab77; --good-dim:#436f4e;
+  --good-soft:rgba(143,206,159,.14); --good-softer:rgba(143,206,159,.07);
+  --shadow:0 8px 26px rgba(0,0,0,.42);
   color-scheme:dark;
 }
 .stApp{background:var(--bg);color:var(--text)}
@@ -165,7 +171,7 @@ html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
 ::selection{background:var(--accent-dim);color:#fff}
 
 .hero{align-items:center;display:flex;gap:13px;margin-bottom:15px}
-.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:13px;box-shadow:0 4px 14px rgba(63,190,131,.22);color:#06120c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
+.mark{align-items:center;background:linear-gradient(135deg,var(--accent),var(--accent-deep));border-radius:13px;box-shadow:0 4px 14px rgba(240,168,105,.20);color:#06120c;display:flex;font-size:23px;height:46px;justify-content:center;width:46px}
 .hero h1{color:var(--text);font-size:30px;letter-spacing:-.9px;margin:0}
 .hero p{color:var(--muted);font-size:13px;margin:4px 0 0}
 
@@ -173,8 +179,8 @@ html,body,[class*=css]{font-family:'DM Sans',system-ui,sans-serif}
 div[data-testid="stPills"]{margin:2px 0 6px}
 div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px!important;font-weight:600!important;padding:6px 16px!important}
 
-.band{background:linear-gradient(135deg,#17362a,#122019);border:1px solid var(--border);border-radius:15px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 14px;padding:18px 21px;position:relative;overflow:hidden}
-.band::after{background:radial-gradient(circle at 88% 12%,rgba(63,190,131,.20),transparent 62%);content:'';inset:0;position:absolute}
+.band{background:linear-gradient(135deg,#3a2a1e,#241b15);border:1px solid var(--border);border-radius:15px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:8px 0 14px;padding:18px 21px;position:relative;overflow:hidden}
+.band::after{background:radial-gradient(circle at 88% 12%,rgba(240,168,105,.22),transparent 62%);content:'';inset:0;position:absolute}
 .band>*{position:relative;z-index:1}
 .band span{color:var(--accent);display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
 .band strong{color:#fff;display:block;font-size:40px;letter-spacing:-1.6px;line-height:1.04;margin-top:5px}
@@ -185,14 +191,14 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px 16px;transition:border-color .15s,transform .15s}
 .card:hover{border-color:var(--accent-dim);transform:translateY(-1px)}
 .card h3{color:var(--text);font-size:13.5px;font-weight:700;margin:0 0 10px}
-.card .big{color:var(--accent);font-size:25px;font-weight:700;letter-spacing:-.8px}
+.card .big{color:var(--good);font-size:25px;font-weight:700;letter-spacing:-.8px}
 .card .sub{color:var(--dim);font-size:11px;margin-top:2px}
 .kv{border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11.5px;margin-top:9px;padding-top:8px}
 .kv i{color:var(--muted);font-style:normal}
 .kv b{color:var(--text);font-weight:600}
 .bar{background:var(--raised);border-radius:3px;height:5px;margin-top:11px;overflow:hidden}
-.bar div{background:linear-gradient(90deg,var(--accent),var(--accent-deep));height:100%}
-.hint{background:var(--soft);border:1px solid var(--accent-dim);border-radius:7px;color:var(--accent);display:inline-block;font-size:10.5px;margin-top:9px;padding:4px 8px}
+.bar div{background:linear-gradient(90deg,var(--good),var(--good-deep));height:100%}
+.hint{background:var(--good-soft);border:1px solid var(--good-dim);border-radius:7px;color:var(--good);display:inline-block;font-size:10.5px;margin-top:9px;padding:4px 8px}
 .why{color:var(--muted);font-size:12px;line-height:1.6;margin-top:9px}
 
 .sec{align-items:baseline;display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 11px}
@@ -204,8 +210,8 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .tile span{color:var(--muted);display:block;font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
 .tile strong{color:var(--text);display:block;font-size:20px;letter-spacing:-.5px;margin-top:3px}
 .tile small{color:var(--dim);display:block;font-size:10.5px;margin-top:2px}
-.tile.win{background:var(--soft);border-color:var(--accent-dim)}
-.tile.win strong,.tile.win small{color:var(--accent)}
+.tile.win{background:var(--good-soft);border-color:var(--good-dim)}
+.tile.win strong,.tile.win small{color:var(--good)}
 
 .delivery{display:grid;gap:11px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));margin:0 0 13px}
 .dcard{background:var(--surface);border:1px dashed var(--border);border-radius:11px;color:var(--text);font-size:12px;padding:10px 13px}
@@ -216,7 +222,7 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .t{border-collapse:separate;border-spacing:0;color:var(--text);font-size:13px;min-width:760px;width:100%}
 .t thead th{background:var(--raised);border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.07em;padding:11px 10px;position:sticky;text-align:right;text-transform:uppercase;top:0;z-index:3}
 .t thead th.itemh{left:0;text-align:left;z-index:4}
-.t thead th.savh{background:#1d322a;color:var(--accent)}
+.t thead th.savh{background:#233025;color:var(--good)}
 .t thead th em{color:var(--dim);display:block;font-size:9.5px;font-style:normal;font-weight:400;letter-spacing:.02em;text-transform:none}
 .t td{border-bottom:1px solid var(--border);padding:9px 10px;vertical-align:middle}
 .t tbody tr:last-child td{border-bottom:0}
@@ -229,11 +235,11 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .pc a:hover .p{text-decoration:underline}
 .pc .p{font-size:13.5px;font-weight:600}
 .pc .u{color:var(--dim);font-size:10.5px;margin-top:2px}
-.pc.best{background:var(--soft);box-shadow:inset 2px 0 0 var(--accent)}
-.pc.best .p{color:var(--accent);font-weight:700}
-.pc.best .u{color:#6cc79a}
+.pc.best{background:var(--good-soft);box-shadow:inset 2px 0 0 var(--good)}
+.pc.best .p{color:var(--good);font-weight:700}
+.pc.best .u{color:#a5d6b1}
 .pc.miss{color:var(--dim);text-align:right}
-.sv{background:var(--softer);color:var(--accent);font-weight:700;text-align:right;white-space:nowrap}
+.sv{background:var(--good-softer);color:var(--good);font-weight:700;text-align:right;white-space:nowrap}
 .sv.zero{color:var(--dim);font-weight:400}
 .note{background:var(--surface);border:1px solid var(--border);border-radius:11px;color:var(--muted);font-size:12px;line-height:1.65;margin:12px 0;padding:13px 15px}
 .note b{color:var(--text)}
@@ -249,17 +255,17 @@ div[data-testid="stPills"] button{border-radius:999px!important;font-size:13.5px
 .t.deals tbody tr:hover td.nm{background:var(--raised)}
 .t.deals td.nm em{color:var(--dim);display:block;font-size:10.5px;font-style:normal;font-weight:400;margin-top:2px}
 .t.deals td.cost{font-weight:700;white-space:nowrap}
-.t.deals td.cost.free{color:var(--accent)}
+.t.deals td.cost.free{color:var(--good)}
 .t.deals td.go{white-space:nowrap}
 .t.deals td.go a{background:var(--soft);border:1px solid var(--accent-dim);border-radius:7px;color:var(--accent);font-weight:700;padding:6px 11px;text-decoration:none}
 .t.deals td.go a:hover{background:var(--accent-dim);color:#fff}
 .t.deals td.num{text-align:right;white-space:nowrap}
 .t.deals td.was{color:var(--dim);text-decoration:line-through;white-space:nowrap}
-.t.deals td.now{color:var(--accent);font-weight:700;white-space:nowrap}
+.t.deals td.now{color:var(--good);font-weight:700;white-space:nowrap}
 .ends{border-radius:6px;font-size:10.5px;font-weight:600;padding:3px 7px;white-space:nowrap}
 .ends.soon{background:rgba(224,138,60,.16);color:#e2a163}
 .ends.ok{background:var(--raised);color:var(--muted)}
-.ends.open{background:var(--softer);color:var(--accent)}
+.ends.open{background:var(--good-softer);color:var(--good)}
 .srcs{color:var(--dim);font-size:11.5px;margin:11px 2px}
 .srcs a{color:var(--accent);text-decoration:none}
 .srcs a:hover{text-decoration:underline}
